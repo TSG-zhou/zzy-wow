@@ -808,7 +808,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
             SetTitle(titleEntry);
     }
 
-    if (quest->GetBonusTalents())
+    if (quest->GetBonusTalents() && quest->GetZoneOrSort() != -QUEST_SORT_DEATH_KNIGHT)
     {
         m_questRewardTalentCount += quest->GetBonusTalents();
         InitTalentForLevel();

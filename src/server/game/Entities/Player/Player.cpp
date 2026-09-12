@@ -13932,22 +13932,14 @@ uint32 Player::CalculateTalentsPoints() const
 {
     uint32 base_talent = GetLevel() < 10 ? 0 : GetLevel() - 9;
 
-    uint32 talentPointsForLevel = 0;
-    if (!IsClass(CLASS_DEATH_KNIGHT, CLASS_CONTEXT_TALENT_POINT_CALC) || GetMapId() != MAP_EBON_HOLD)
-    {
-        talentPointsForLevel = base_talent;
-    }
-    else
+    uint32 talentPointsForLevel = base_talent;
+
+    if (IsClass(CLASS_DEATH_KNIGHT, CLASS_CONTEXT_TALENT_POINT_CALC) && GetMapId() == MAP_EBON_HOLD)
     {
         talentPointsForLevel = GetLevel() < 56 ? 0 : GetLevel() - 55;
-        talentPointsForLevel += m_questRewardTalentCount;
-
-        if (talentPointsForLevel > base_talent)
-        {
-            talentPointsForLevel = base_talent;
-        }
     }
 
+    talentPointsForLevel += m_questRewardTalentCount;
     talentPointsForLevel += m_extraBonusTalentCount;
     sScriptMgr->OnPlayerCalculateTalentsPoints(this, talentPointsForLevel);
     return uint32(talentPointsForLevel * sWorld->getRate(RATE_TALENT));

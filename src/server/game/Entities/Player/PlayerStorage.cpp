@@ -6501,7 +6501,7 @@ void Player::_LoadQuestStatusRewarded(PreparedQueryResult result)
                         SetTitle(titleEntry);
                 }
 
-                if (quest->GetBonusTalents())
+                if (quest->GetBonusTalents() && quest->GetZoneOrSort() != -QUEST_SORT_DEATH_KNIGHT)
                     m_questRewardTalentCount += quest->GetBonusTalents();
             }
 
