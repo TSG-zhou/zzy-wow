@@ -1,0 +1,72 @@
+#
+# Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
+#
+
+[worldserver]
+
+########################################
+# 角色服务模块配置
+########################################
+#
+#    CharacterServices.Enable
+#        说明：启用角色服务模块
+#        默认值：     1 - 启用
+#                     0 - 禁用
+#
+#    CharacterServices.NameChange.Enable
+#        说明：启用改名服务
+#        默认值：     1 - 启用
+#                     0 - 禁用
+#
+#    CharacterServices.AppearanceChange.Enable
+#        说明：启用外貌修改服务
+#        默认值：     1 - 启用
+#                     0 - 禁用
+#
+#    CharacterServices.RaceChange.Enable
+#        说明：启用种族变更服务
+#        默认值：     1 - 启用
+#                     0 - 禁用
+#
+#    CharacterServices.FactionChange.Enable
+#        说明：启用阵营变更服务
+#        默认值：     1 - 启用
+#                     0 - 禁用
+#
+
+CharacterServices.Enable = 1
+
+CharacterServices.NameChange.Enable = 1
+CharacterServices.AppearanceChange.Enable = 1
+CharacterServices.RaceChange.Enable = 1
+CharacterServices.FactionChange.Enable = 1
+
+#
+#    CharacterServices.DynamicCost.Enable
+#        说明：根据玩家等级动态缩放服务费用（玩家等级 / 80 × 费用）
+#        默认值：     1 - 启用
+#                     0 - 禁用
+#
+#    CharacterServices.Cost.NameChange
+#        说明：改名服务的费用（单位：金币）
+#        默认值：     25
+#
+#    CharacterServices.Cost.AppearanceChange
+#        说明：外貌修改服务的费用（单位：金币）
+#        默认值：     50
+#
+#    CharacterServices.Cost.RaceChange
+#        说明：种族变更服务的费用（单位：金币）
+#        默认值：     100
+#
+#    CharacterServices.Cost.FactionChange
+#        说明：阵营变更服务的费用（单位：金币）
+#        默认值：     250
+#
+
+CharacterServices.DynamicCost.Enable = 1
+
+CharacterServices.Cost.NameChange = 25
+CharacterServices.Cost.AppearanceChange = 50
+CharacterServices.Cost.RaceChange = 100
+CharacterServices.Cost.FactionChange = 250

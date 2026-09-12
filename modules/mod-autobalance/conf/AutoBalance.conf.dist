@@ -1,0 +1,1247 @@
+[worldserver]
+##########################
+#
+# Logging / 日志设置
+#
+# Add these lines to your worldserver.conf file to enable logging for AutoBalance.
+# 将以下行添加到 worldserver.conf 文件中以启用 AutoBalance 的日志记录。
+# Be sure to add them after the `Logger.module=4,Console Server` line.
+# 请确保添加在 `Logger.module=4,Console Server` 行之后。
+#
+# 4 = Info (Default), 5 = Debug
+# 4 = 信息（默认），5 = 调试
+#
+##########################
+# Logger.module.AutoBalance=4,Console Server
+# Logger.module.AutoBalance_CombatLocking=4,Console Server
+# Logger.module.AutoBalance_DamageHealingCC=4,Console Server
+# Logger.module.AutoBalance_StatGeneration=4,Console Server
+
+##########################
+#
+# Enable / Disable Settings / 启用/禁用设置
+#
+##########################
+
+#
+#     AutoBalance.Enable
+#        Enable/Disable all features globally. If this setting is off, all settings after this one do not take effect.
+#        全局启用/禁用所有功能。如果此设置关闭，则后续所有设置均不生效。
+#        Default:     1 (1 = ON, 0 = OFF)
+#        默认值：1（1 = 开启，0 = 关闭）
+AutoBalance.Enable.Global=1
+
+#
+#     AutoBalance.Enabled.*
+#        Enable/Disable all features for each instance size and difficulty.
+#        为每种副本规模和难度启用/禁用所有功能。
+#        If an instance size is set to 0 here, none of the other settings for that instance size will take effect.
+#        如果此处将某个副本规模设为 0，则该副本规模的其他所有设置均不生效。
+#        Default:     1 (1 = ON, 0 = OFF)
+#        默认值：1（1 = 开启，0 = 关闭）
+#
+AutoBalance.Enable.5M=1
+AutoBalance.Enable.10M=1
+AutoBalance.Enable.15M=1
+AutoBalance.Enable.20M=1
+AutoBalance.Enable.25M=1
+AutoBalance.Enable.40M=1
+AutoBalance.Enable.OtherNormal=1
+
+AutoBalance.Enable.5MHeroic=1
+AutoBalance.Enable.10MHeroic=1
+AutoBalance.Enable.25MHeroic=1
+AutoBalance.Enable.OtherHeroic=1
+
+#
+#     AutoBalance.Disable.PerInstance
+#        Disable all features for the given instance IDs. If an instance ID is not specified here, that instance will follow
+#        the `AutoBalance.Enable.*` settings.
+#        按副本ID禁用所有功能。未在此处指定的副本ID将遵循 `AutoBalance.Enable.*` 设置。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        Format: "[InstanceID], [InstanceID], [InstanceID], ..."
+#        格式："副本ID, 副本ID, 副本ID, ..."
+#
+#        Example: AutoBalance.Disable.PerInstance="33, 43, 129"
+#        示例：AutoBalance.Disable.PerInstance="33, 43, 129"
+#
+#        Default: ""
+#        默认值：""
+AutoBalance.Disable.PerInstance = ""
+
+##########################
+#
+# Minimum Players / 最少玩家数
+#
+##########################
+#
+#     AutoBalance.MinPlayers
+#     AutoBalance.MinPlayers.Heroic
+#        Sets the Minimum Number of players to scale down to for all normal/heroic instances.
+#        设置所有普通/英雄副本的最少玩家缩放人数。
+#        If fewer than this number of players enter the instance, scale to the specified value.
+#        如果进入副本的玩家少于此人数，则按此值进行缩放。
+#
+#        NOTE: Player Difficulty Offset is applied AFTER the player count is adjusted for the MinPlayer setting
+#        注意：玩家难度偏移量在玩家数按 MinPlayer 设置调整之后才生效
+#
+#        AutoBalance.MinPlayers affects only normal instances.
+#        AutoBalance.MinPlayers 仅影响普通副本。
+#        AutoBalance.MinPlayers.Heroic affects only heroic instances.
+#        AutoBalance.MinPlayers.Heroic 仅影响英雄副本。
+#
+#        Example: AutoBalance.MinPlayers = 1
+#                 AutoBalance.MinPlayers.Heroic = 5
+#        示例：AutoBalance.MinPlayers = 1
+#              AutoBalance.MinPlayers.Heroic = 5
+#
+#        Default: 1
+#        默认值：1
+AutoBalance.MinPlayers = 1
+AutoBalance.MinPlayers.Heroic = 1
+AutoBalance.MinPlayers.Raid = 1
+AutoBalance.MinPlayers.RaidHeroic = 1
+
+#
+#     AutoBalance.MinPlayers.PerInstance
+#     AutoBalance.MinPlayers.Heroic.PerInstance
+#        Sets the Minimum Number of players to scale down to per-instance ID.
+#        按副本ID设置最少玩家缩放人数。
+#        If fewer than this number of players enter the instance, scale to the specified value.
+#        如果进入副本的玩家少于此人数，则按此值进行缩放。
+#
+#        NOTE: Player Difficulty Offset is applied AFTER the player count is adjusted for the MinPlayer setting
+#        注意：玩家难度偏移量在玩家数按 MinPlayer 设置调整之后才生效
+#
+#        AutoBalance.MinPlayers.PerInstance affects only normal instances.
+#        AutoBalance.MinPlayers.PerInstance 仅影响普通副本。
+#        AutoBalance.MinPlayers.Heroic.PerInstance affects only heroic instances.
+#        AutoBalance.MinPlayers.Heroic.PerInstance 仅影响英雄副本。
+#
+#        If a given Instance ID is not specified in this list, the minimum number of players is set by the generic MinPlayers settings.
+#        如果列表中未指定某个副本ID，则最少玩家数由通用的 MinPlayers 设置决定。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        Format: "[InstanceID] [MinPlayers], [InstanceID] [MinPlayers], [InstanceID] [MinPlayers], ..."
+#        格式："副本ID 最少人数, 副本ID 最少人数, 副本ID 最少人数, ..."
+#
+#        Example: AutoBalance.MinPlayers.PerInstance="33 2, 43 5, 129 4"
+#                 AutoBalance.MinPlayers.PerInstance="33 5, 43 5, 129 5"
+#        示例：AutoBalance.MinPlayers.PerInstance="33 2, 43 5, 129 4"
+#              AutoBalance.MinPlayers.PerInstance="33 5, 43 5, 129 5"
+#
+#        Default: ""
+#        默认值：""
+AutoBalance.MinPlayers.PerInstance = ""
+AutoBalance.MinPlayers.Heroic.PerInstance = ""
+
+##########################
+#
+# Stat Scaling - Inflection Point / 属性缩放 - 拐点
+#
+##########################
+
+#     AutoBalance.InflectionPoint* series / AutoBalance.InflectionPoint* 系列
+#        InflectionPoint
+#           Changes the inflection point of the Hyperbolic Tangent function that determines the enemy multiplier for a given player count.
+#           更改双曲正切函数的拐点，该函数决定给定玩家数量下敌人的属性乘数。
+#           This adjusts the shape of the overall curve. A lower value means that difficulty will increase faster as you add players.
+#           这会调整整体曲线的形状。值越低，添加玩家时难度上升越快。
+#
+#           This image provies a visual of several InflectionPoint settings and its affect on the enemy stat multipliers.
+#           此图片展示了多种拐点设置对敌人属性乘数的视觉效果。
+#           https://i.imgur.com/x42UnUR.png
+#
+#           Example: If InflectionPointRaid is 0.5, an enemy in a 40-player instance will have half its life with 20 players in the instance
+#                    If InflectionPointRaid is 0.8, an enemy in a 40-player instance will have half its life with 12 players in the instance
+#           示例：如果 InflectionPointRaid 为 0.5，则40人副本中的敌人在20人时将只有一半生命值
+#                 如果 InflectionPointRaid 为 0.8，则40人副本中的敌人在12人时将只有一半生命值
+#
+#           Default: 0.5
+#           默认值：0.5
+#
+#        CurveFloor / 曲线下限
+#           When the curve to determine the enemy multiplier is calculated, start the curve at this value.
+#           计算敌人乘数曲线时，将曲线起始值设为此值。
+#
+#           This allows you to make enemies have higher stats for lower player counts without adversely affecting the stats of
+#           higher player counts. Applied before `AutoBalance.StatModifier*` values.
+#           这允许你在低玩家数时使敌人拥有更高属性，而不影响高玩家数时的属性。在 `AutoBalance.StatModifier*` 之前生效。
+#
+#           Value may be negative if needed to achieve your desired curve.
+#           如需要，值可以为负数以实现所需曲线。
+#
+#           To understand how CurveFloor and CurveCeiling affect the multiplier, see this image:
+#           要了解 CurveFloor 和 CurveCeiling 如何影响乘数，请参见此图片：
+#           https://i.imgur.com/I8S4cwJ.png
+#
+#           Default: 0.0
+#           默认值：0.0
+#
+#        CurveCeiling / 曲线上限
+#           When the curve to determine the enemy multiplier is calculated, end the curve at this value.
+#           计算敌人乘数曲线时，将曲线终止值设为此值。
+#
+#           This allows you to make enemies have lower stats for higher player counts without adversely affecting the stats of
+#           lower player counts. Applied before `AutoBalance.StatModifier*` values.
+#           这允许你在高玩家数时使敌人拥有更低属性，而不影响低玩家数时的属性。在 `AutoBalance.StatModifier*` 之前生效。
+#
+#           To understand how CurveFloor and CurveCeiling affect the multiplier, see this image:
+#           要了解 CurveFloor 和 CurveCeiling 如何影响乘数，请参见此图片：
+#           https://i.imgur.com/I8S4cwJ.png
+#
+#           May be set to higher than 1.0 to increase difficulty of the instance over the stock values:
+#           可设置为高于 1.0 以使副本难度超过默认值：
+#           https://i.imgur.com/DBPxT8E.png
+#
+#           Default: 1.0
+#           默认值：1.0
+#
+#       BossModifier / Boss乘数
+#           InflectionPoint is multiplied by this value for creatures considered dungeon bosses (from dungeons or raids).
+#           对于副本Boss（来自地下城或团队副本），拐点会乘以此值。
+#           It is a multiplier, not a new Inflection Point. Values higher than 1.0 will make enemies easier at lower player
+#           counts while lower than 1.0 will make enemies easier at lower player counts.
+#           这是一个乘数，不是新的拐点。高于 1.0 的值会使低玩家数时 Boss 更容易，低于 1.0 则更难。
+#
+#           To better understand this effect, see the interactive spreadsheet explained below.
+#           要更好地理解此效果，请参见下方的交互式电子表格。
+#
+#           Default: 1.0
+#           默认值：1.0
+#
+#
+#     An interactive spreadsheet is available for you to visually see what effect your settings have on the difficulty curve.
+#     提供了一个交互式电子表格，可以直观地查看你的设置对难度曲线的影响。
+#
+#     https://docs.google.com/spreadsheets/d/100cmKIJIjCZ-ncWd0K9ykO8KUgwFTcwg4h2nfE_UeCc/copy
+#
+#     To use it, copy the sheet to your own Google Drive and edit the values on the left with the yellow background.
+#     The "Final Multiplier" value is the actual multiplier that will be applied to enemies in a given dungeon.
+#     使用方法：将表格复制到你自己的 Google Drive 中，然后编辑左侧黄色背景的值。
+#     "Final Multiplier"（最终乘数）值是将应用于给定副本中敌人的实际乘数。
+
+### 5-player dungeons / 5人副本
+AutoBalance.InflectionPoint=0.5
+AutoBalance.InflectionPoint.CurveFloor=0.0
+AutoBalance.InflectionPoint.CurveCeiling=1.0
+AutoBalance.InflectionPoint.BossModifier=1.0
+
+### 5-player heroic dungeons / 5人英雄副本
+AutoBalance.InflectionPointHeroic=0.5
+AutoBalance.InflectionPointHeroic.CurveFloor=0.0
+AutoBalance.InflectionPointHeroic.CurveCeiling=1.0
+AutoBalance.InflectionPointHeroic.BossModifier=1.0
+
+### Default for all raids / 所有团队副本默认
+AutoBalance.InflectionPointRaid=0.5
+AutoBalance.InflectionPointRaid.CurveFloor=0.0
+AutoBalance.InflectionPointRaid.CurveCeiling=1.0
+AutoBalance.InflectionPointRaid.BossModifier=1.0
+
+### Default for all heroic raids / 所有英雄团队副本默认
+AutoBalance.InflectionPointRaidHeroic=0.5
+AutoBalance.InflectionPointRaidHeroic.CurveFloor=0.0
+AutoBalance.InflectionPointRaidHeroic.CurveCeiling=1.0
+AutoBalance.InflectionPointRaidHeroic.BossModifier=1.0
+
+###
+### By default, all instances use the settings configured above. To customize settings for
+### a particular instance size or difficulty, set the variables below. If the variable is
+### blank, the broader settings above will apply.
+###
+
+###
+### By default, all instances use the settings configured above. To customize settings for
+### 默认情况下，所有副本使用上方配置的设置。要为特定副本规模或难度自定义设置，
+### a particular instance size or difficulty, set the variables below. If the variable is
+### 请设置以下变量。如果变量为空，
+### blank, the broader settings above will apply.
+### 则使用上方更笼统的设置。
+###
+
+### 10-player raids / 10人团队副本
+AutoBalance.InflectionPointRaid10M=
+AutoBalance.InflectionPointRaid10M.CurveFloor=
+AutoBalance.InflectionPointRaid10M.CurveCeiling=
+AutoBalance.InflectionPointRaid10M.BossModifier=
+
+### 10-player heroic raids / 10人英雄团队副本
+AutoBalance.InflectionPointRaid10MHeroic=
+AutoBalance.InflectionPointRaid10MHeroic.CurveFloor=
+AutoBalance.InflectionPointRaid10MHeroic.CurveCeiling=
+AutoBalance.InflectionPointRaid10MHeroic.BossModifier=
+
+### 15-player raids / 15人团队副本
+AutoBalance.InflectionPointRaid15M=
+AutoBalance.InflectionPointRaid15M.CurveFloor=
+AutoBalance.InflectionPointRaid15M.CurveCeiling=
+AutoBalance.InflectionPointRaid15M.BossModifier=
+
+### 20-player raids / 20人团队副本
+AutoBalance.InflectionPointRaid20M=
+AutoBalance.InflectionPointRaid20M.CurveFloor=
+AutoBalance.InflectionPointRaid20M.CurveCeiling=
+AutoBalance.InflectionPointRaid20M.BossModifier=
+
+### 25-player raids / 25人团队副本
+AutoBalance.InflectionPointRaid25M=
+AutoBalance.InflectionPointRaid25M.CurveFloor=
+AutoBalance.InflectionPointRaid25M.CurveCeiling=
+AutoBalance.InflectionPointRaid25M.BossModifier=
+
+### 25-player heroic raids / 25人英雄团队副本
+AutoBalance.InflectionPointRaid25MHeroic=
+AutoBalance.InflectionPointRaid25MHeroic.CurveFloor=
+AutoBalance.InflectionPointRaid25MHeroic.CurveCeiling=
+AutoBalance.InflectionPointRaid25MHeroic.BossModifier=
+
+### 40-player raids / 40人团队副本
+AutoBalance.InflectionPointRaid40M=
+AutoBalance.InflectionPointRaid40M.CurveFloor=
+AutoBalance.InflectionPointRaid40M.CurveCeiling=
+AutoBalance.InflectionPointRaid40M.BossModifier=
+
+#
+#     AutoBalance.InflectionPoint.PerInstance
+#        Sets Inflection Point settings for specific `InstanceID`s.
+#        为特定副本ID设置拐点。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        Specifying a value of `-1` will skip overriding of that value. For instances not listed, the default inflection value for the instance's
+#        difficulty and size will be used. You may omit entries from the end of the string if desired. Only one set of values should be specified per InstanceID.
+#        指定 `-1` 将跳过该值的覆盖。未列出的副本将使用该副本难度和规模的默认拐点值。可以省略字符串末尾的条目。每个副本ID只能指定一组值。
+#
+#        Format: "[InstanceID] [InflectionPoint] [CurveFloor] [CurveCeiling], [InstanceID] [InflectionPoint] [CurveFloor] [CurveCeiling], ..."
+#        格式："副本ID 拐点 曲线下限 曲线上限, 副本ID 拐点 曲线下限 曲线上限, ..."
+#
+#        Example: AutoBalance.InflectionPoint.PerInstance="229 0.4 0.0 1.5, 309 -1 0.0 1.1, 48 0.3"
+#        示例：AutoBalance.InflectionPoint.PerInstance="229 0.4 0.0 1.5, 309 -1 0.0 1.1, 48 0.3"
+#
+#        Default: ""
+#        默认值：""
+#
+AutoBalance.InflectionPoint.PerInstance=""
+
+#
+#     AutoBalance.InflectionPoint.Boss.PerInstance
+#        Sets Inflection Point settings for all bosses in specific `InstanceID`s. Note that the first value is "InflectionPointMultiplier", which behaves
+#        identically to the BossModifier setting. The "normal" inflection point is multiplied by this value for bosses. To better understand this effect,
+#        see the interactive spreadsheet.
+#        为特定副本ID的所有Boss设置拐点。注意第一个值是"拐点乘数"，其行为与 BossModifier 设置相同。
+#        Boss的"普通"拐点会乘以此值。要更好地理解此效果，请参见交互式电子表格。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        For instances not listed, the default inflection value for the instance's difficulty and size will be used. Only one set of values should be specified
+#        per InstanceID.
+#        未列出的副本将使用该副本难度和规模的默认拐点值。每个副本ID只能指定一组值。
+#
+#        Format: "[InstanceID] [InflectionPointMultiplier], [InstanceID] [InflectionPointMultiplier], ..."
+#        格式："副本ID 拐点乘数, 副本ID 拐点乘数, ..."
+#
+#        Example: AutoBalance.InflectionPoint.Boss.PerInstance="229 1.2, 309 1.5, 48 1.25"
+#        示例：AutoBalance.InflectionPoint.Boss.PerInstance="229 1.2, 309 1.5, 48 1.25"
+#
+#        Default: ""
+#        默认值：""
+#
+AutoBalance.InflectionPoint.Boss.PerInstance=""
+
+#
+#     AutoBalance.playerCountDifficultyOffset
+#        Offset of players inside an instance. Affects all instance types.
+#        副本内玩家数偏移量。影响所有副本类型。
+#        Default:     0
+#        默认值：0
+AutoBalance.playerCountDifficultyOffset=0
+
+##########################
+#
+# Stat Scaling - Stat Modifiers / 属性缩放 - 属性修正器
+#
+##########################
+
+#     AutoBalance.StatModifier* series / AutoBalance.StatModifier* 系列
+#        The difficulty curve (as defined by the InflectionPoint settings) determines the base multiplier. The base
+#        multiplier is then adjusted (multiplied) by the appropriate StatModifier setting. This allows you to control
+#        the balance of how scaling affects the four adjustable stats: health, mana, armor, and damage.
+#        难度曲线（由拐点设置定义）决定基础乘数。基础乘数随后被对应的属性修正器调整（相乘）。
+#        这允许你控制缩放对四个可调属性的影响平衡：生命值、法力值、护甲和伤害。
+#
+#        AutoBalance.StatModifier*.<Stat> -- only affects non-boss creatures
+#        AutoBalance.StatModifier*.<属性> -- 仅影响非Boss生物
+#        AutoBalance.StatModifier*.Boss.<Stat> -- only affects bosses
+#        AutoBalance.StatModifier*.Boss.<属性> -- 仅影响Boss
+#
+#        To see this in action, change the `StatModifier` value on the spreadsheet:
+#        要实际查看效果，请在电子表格中更改 `StatModifier` 值：
+#        https://docs.google.com/spreadsheets/d/100cmKIJIjCZ-ncWd0K9ykO8KUgwFTcwg4h2nfE_UeCc/copy
+#
+#        To use it, copy the sheet to your own Google Drive and edit the values on the left with the yellow background.
+#        The "Final Multiplier" value is the actual multiplier that will be applied to enemies in a given instance.
+#        使用方法：将表格复制到你自己的 Google Drive 中，然后编辑左侧黄色背景的值。
+#        "Final Multiplier"（最终乘数）值是将应用于给定副本中敌人的实际乘数。
+#
+#        Global / 全局
+#           Multiply the other four settings by this value. Allows you to increase all the stats (health, mana, armor,
+#           damage) with a single adjustment. Both the global value and the stat-specific value are used at the same time.
+#           将其他四个设置乘以此值。允许你通过一次调整来提升所有属性（生命值、法力值、护甲、伤害）。
+#           全局值和特定属性值会同时生效。
+#
+#           Example: If "Global" is 0.5, and "Health" is 1.5, the health of the creature will be multiplied by 0.75 of
+#                    its value (after adjusting for the number of players).
+#           示例：如果"全局"为 0.5，"生命值"为 1.5，则生物的生命值将乘以其值的 0.75（在玩家数调整之后）。
+#
+#           Default: 1.0
+#           默认值：1.0
+#
+#        Health | Mana | Armor | Damage / 生命值 | 法力值 | 护甲 | 伤害
+#           Adjusts the StatModifier for the appropriate stat. Affected by the Global StatModifier above.
+#           调整对应属性的修正器。受上方的全局修正器影响。
+#
+#           NOTE: "Damage" affects both creature damage and world damage.
+#           注意："伤害"同时影响生物伤害和世界伤害。
+#
+#           Default: 1.0
+#           默认值：1.0
+#
+#        Boss.Global | Boss.Health | Boss.Mana | Boss.Armor | Boss.Damage
+#           Sets a SEPARATE stat multiplier for bosses. Is NOT affected by the non-boss modifiers. Only applies to creatures
+#           considered instance bosses (from dungeons or raids).
+#           为Boss设置单独的属性乘数。不受非Boss修正器影响。仅适用于副本Boss（来自地下城或团队副本）。
+#
+#           Default: If not set for a given instance size/type, defaults to the dungeon/raid default values.
+#           默认值：如果未为给定副本规模/类型设置，则使用地下城/团队副本的默认值。
+#
+#           To better understand this effect, see the interactive spreadsheet.
+#           要更好地理解此效果，请参见交互式电子表格。
+#
+
+### 5-player dungeons / 5人副本
+AutoBalance.StatModifier.Global=1.0
+AutoBalance.StatModifier.Health=1.0
+AutoBalance.StatModifier.Mana=1.0
+AutoBalance.StatModifier.Armor=1.0
+AutoBalance.StatModifier.Damage=1.0
+
+AutoBalance.StatModifier.Boss.Global=1.0
+AutoBalance.StatModifier.Boss.Health=1.0
+AutoBalance.StatModifier.Boss.Mana=1.0
+AutoBalance.StatModifier.Boss.Armor=1.0
+AutoBalance.StatModifier.Boss.Damage=1.0
+
+### 5-player heroic dungeons / 5人英雄副本
+AutoBalance.StatModifierHeroic.Global=1.0
+AutoBalance.StatModifierHeroic.Health=1.0
+AutoBalance.StatModifierHeroic.Mana=1.0
+AutoBalance.StatModifierHeroic.Armor=1.0
+AutoBalance.StatModifierHeroic.Damage=1.0
+
+AutoBalance.StatModifierHeroic.Boss.Global=1.0
+AutoBalance.StatModifierHeroic.Boss.Health=1.0
+AutoBalance.StatModifierHeroic.Boss.Mana=1.0
+AutoBalance.StatModifierHeroic.Boss.Armor=1.0
+AutoBalance.StatModifierHeroic.Boss.Damage=1.0
+
+### Default for all raids / 所有团队副本默认
+AutoBalance.StatModifierRaid.Global=1.0
+AutoBalance.StatModifierRaid.Health=1.0
+AutoBalance.StatModifierRaid.Mana=1.0
+AutoBalance.StatModifierRaid.Armor=1.0
+AutoBalance.StatModifierRaid.Damage=1.0
+
+AutoBalance.StatModifierRaid.Boss.Global=1.0
+AutoBalance.StatModifierRaid.Boss.Health=1.0
+AutoBalance.StatModifierRaid.Boss.Mana=1.0
+AutoBalance.StatModifierRaid.Boss.Armor=1.0
+AutoBalance.StatModifierRaid.Boss.Damage=1.0
+
+### Default for all heroic raids / 所有英雄团队副本默认
+AutoBalance.StatModifierRaidHeroic.Global=1.0
+AutoBalance.StatModifierRaidHeroic.Health=1.0
+AutoBalance.StatModifierRaidHeroic.Mana=1.0
+AutoBalance.StatModifierRaidHeroic.Armor=1.0
+AutoBalance.StatModifierRaidHeroic.Damage=1.0
+
+AutoBalance.StatModifierRaidHeroic.Boss.Global=1.0
+AutoBalance.StatModifierRaidHeroic.Boss.Health=1.0
+AutoBalance.StatModifierRaidHeroic.Boss.Mana=1.0
+AutoBalance.StatModifierRaidHeroic.Boss.Armor=1.0
+AutoBalance.StatModifierRaidHeroic.Boss.Damage=1.0
+
+###
+### By default, all instances use the settings configured above. To customize settings for
+### 默认情况下，所有副本使用上方配置的设置。要为特定副本规模或难度自定义设置，
+### a particular instance size or difficulty, set the variables below. If the variable is
+### 请设置以下变量。如果变量为空，
+### blank, the broader settings above will apply.
+### 则使用上方更笼统的设置。
+###
+
+### 10-player raids / 10人团队副本
+AutoBalance.StatModifierRaid10M.Global=
+AutoBalance.StatModifierRaid10M.Health=
+AutoBalance.StatModifierRaid10M.Mana=
+AutoBalance.StatModifierRaid10M.Armor=
+AutoBalance.StatModifierRaid10M.Damage=
+
+AutoBalance.StatModifierRaid10M.Boss.Global=
+AutoBalance.StatModifierRaid10M.Boss.Health=
+AutoBalance.StatModifierRaid10M.Boss.Mana=
+AutoBalance.StatModifierRaid10M.Boss.Armor=
+AutoBalance.StatModifierRaid10M.Boss.Damage=
+
+### 10-player heroic raids / 10人英雄团队副本
+AutoBalance.StatModifierRaid10MHeroic.Global=
+AutoBalance.StatModifierRaid10MHeroic.Health=
+AutoBalance.StatModifierRaid10MHeroic.Mana=
+AutoBalance.StatModifierRaid10MHeroic.Armor=
+AutoBalance.StatModifierRaid10MHeroic.Damage=
+
+AutoBalance.StatModifierRaid10MHeroic.Boss.Global=
+AutoBalance.StatModifierRaid10MHeroic.Boss.Health=
+AutoBalance.StatModifierRaid10MHeroic.Boss.Mana=
+AutoBalance.StatModifierRaid10MHeroic.Boss.Armor=
+AutoBalance.StatModifierRaid10MHeroic.Boss.Damage=
+
+### 15-player raids / 15人团队副本
+AutoBalance.StatModifierRaid15M.Global=
+AutoBalance.StatModifierRaid15M.Health=
+AutoBalance.StatModifierRaid15M.Mana=
+AutoBalance.StatModifierRaid15M.Armor=
+AutoBalance.StatModifierRaid15M.Damage=
+
+AutoBalance.StatModifierRaid15M.Boss.Global=
+AutoBalance.StatModifierRaid15M.Boss.Health=
+AutoBalance.StatModifierRaid15M.Boss.Mana=
+AutoBalance.StatModifierRaid15M.Boss.Armor=
+AutoBalance.StatModifierRaid15M.Boss.Damage=
+
+### 20-player raids / 20人团队副本
+AutoBalance.StatModifierRaid20M.Global=
+AutoBalance.StatModifierRaid20M.Health=
+AutoBalance.StatModifierRaid20M.Mana=
+AutoBalance.StatModifierRaid20M.Armor=
+AutoBalance.StatModifierRaid20M.Damage=
+
+AutoBalance.StatModifierRaid20M.Boss.Global=
+AutoBalance.StatModifierRaid20M.Boss.Health=
+AutoBalance.StatModifierRaid20M.Boss.Mana=
+AutoBalance.StatModifierRaid20M.Boss.Armor=
+AutoBalance.StatModifierRaid20M.Boss.Damage=
+
+### 25-player raids / 25人团队副本
+AutoBalance.StatModifierRaid25M.Global=
+AutoBalance.StatModifierRaid25M.Health=
+AutoBalance.StatModifierRaid25M.Mana=
+AutoBalance.StatModifierRaid25M.Armor=
+AutoBalance.StatModifierRaid25M.Damage=
+
+AutoBalance.StatModifierRaid25M.Boss.Global=
+AutoBalance.StatModifierRaid25M.Boss.Health=
+AutoBalance.StatModifierRaid25M.Boss.Mana=
+AutoBalance.StatModifierRaid25M.Boss.Armor=
+AutoBalance.StatModifierRaid25M.Boss.Damage=
+
+### 25-player heroic raids / 25人英雄团队副本
+AutoBalance.StatModifierRaid25MHeroic.Global=
+AutoBalance.StatModifierRaid25MHeroic.Health=
+AutoBalance.StatModifierRaid25MHeroic.Mana=
+AutoBalance.StatModifierRaid25MHeroic.Armor=
+AutoBalance.StatModifierRaid25MHeroic.Damage=
+
+AutoBalance.StatModifierRaid25MHeroic.Boss.Global=
+AutoBalance.StatModifierRaid25MHeroic.Boss.Health=
+AutoBalance.StatModifierRaid25MHeroic.Boss.Mana=
+AutoBalance.StatModifierRaid25MHeroic.Boss.Armor=
+AutoBalance.StatModifierRaid25MHeroic.Boss.Damage=
+
+### 40-player raids / 40人团队副本
+AutoBalance.StatModifierRaid40M.Global=
+AutoBalance.StatModifierRaid40M.Health=
+AutoBalance.StatModifierRaid40M.Mana=
+AutoBalance.StatModifierRaid40M.Armor=
+AutoBalance.StatModifierRaid40M.Damage=
+
+AutoBalance.StatModifierRaid40M.Boss.Global=
+AutoBalance.StatModifierRaid40M.Boss.Health=
+AutoBalance.StatModifierRaid40M.Boss.Mana=
+AutoBalance.StatModifierRaid40M.Boss.Armor=
+AutoBalance.StatModifierRaid40M.Boss.Damage=
+
+#     AutoBalance.StatModifier*.CCDuration series / AutoBalance.StatModifier*.CCDuration 系列
+#        These StatModifier values affect the duration of CC effects used against the players. CC effects are auras with one
+#        or more of these effects:
+#        这些属性修正器值影响对玩家使用的控制效果（CC）持续时间。CC效果是具有以下一个或多个效果的光环：
+#
+#          - SPELL_AURA_MOD_CHARM（魅惑）
+#          - SPELL_AURA_MOD_CONFUSE（混乱）
+#          - SPELL_AURA_MOD_DISARM（缴械）
+#          - SPELL_AURA_MOD_FEAR（恐惧）
+#          - SPELL_AURA_MOD_PACIFY（平静）
+#          - SPELL_AURA_MOD_POSSESS（占据）
+#          - SPELL_AURA_MOD_SILENCE（沉默）
+#          - SPELL_AURA_MOD_STUN（眩晕）
+#          - SPELL_AURA_MOD_SPEED_SLOW_ALL（全减速）
+#
+#        CCDuration / CC持续时间
+#           Adjusts the duration of CC effects. Not affected by any global settings.
+#           调整CC效果的持续时间。不受任何全局设置影响。
+#
+#           After the InflectionPoint curve determines the base multiplier, it is multiplied by this value to determine the final
+#           CC duration multiplier.
+#           拐点曲线确定基础乘数后，乘以此值来确定最终的CC持续时间乘数。
+#
+#           CCDuration IS affected by the InflectionPoint curve!
+#           CCDuration 受拐点曲线影响！
+#           CCDuration IS NOT affected by StatModifier*.Global values!
+#           CCDuration 不受 StatModifier*.Global 值影响！
+#           CCDuration IS affected by AutoBalance.MinCCDurationModifier and AutoBalance.MaxCCDurationModifier!
+#           CCDuration 受 AutoBalance.MinCCDurationModifier 和 AutoBalance.MaxCCDurationModifier 影响！
+#
+#           Example:
+#           示例：
+#               Assume we are using the default InflectionPoint curve (0.5 with 0.0 floor and 1.0 ceiling), and there are 3 players in the instance.
+#               假设使用默认拐点曲线（0.5，下限 0.0，上限 1.0），副本中有3名玩家。
+#               With 3 players, the base multiplier is '0.6843'. Let's say that CCDuration is set to '0.5'.
+#               3名玩家时基础乘数为 '0.6843'。假设 CCDuration 设为 '0.5'。
+#               The final CC Duration multiplier is 0.6843 * 0.5 = 0.34215
+#               最终CC持续时间乘数为 0.6843 * 0.5 = 0.34215
+#               For a CC with a programmed duration of 8 seconds, the CC will last 8 * 0.34215 = 2.7372 seconds.
+#               对于编程持续时间为8秒的CC，实际持续时间为 8 * 0.34215 = 2.7372 秒。
+#
+#           Default: no value
+#           默认值：无
+#               If no value is set for a given instance type and player count, and the generic values that apply to that instance
+#               are also blank, CC duration will be unchanged.
+#               如果未为给定副本类型和玩家数设置值，且适用于该副本的通用值也为空，则CC持续时间不变。
+#
+#        Boss.CCDuration / Boss CC持续时间
+#           Sets a SEPARATE CCDuration multiplier for bosses. Is NOT affected by the non-boss modifiers. Only applies to creatures
+#           considered instance bosses (from dungeons or raids).
+#           为Boss设置单独的CC持续时间乘数。不受非Boss修正器影响。仅适用于副本Boss（来自地下城或团队副本）。
+#
+#           Default: no value
+#           默认值：无
+#               If no value is set for a given instance type and player count, and the generic values that apply to that instance
+#               are also blank, CC duration will be unchanged.
+#               如果未为给定副本类型和玩家数设置值，且适用于该副本的通用值也为空，则CC持续时间不变。
+#
+
+### 5-player dungeons / 5人副本
+AutoBalance.StatModifier.CCDuration=
+AutoBalance.StatModifier.Boss.CCDuration=
+
+### 5-player heroic dungeons / 5人英雄副本
+AutoBalance.StatModifierHeroic.CCDuration=
+AutoBalance.StatModifierHeroic.Boss.CCDuration=
+
+### Default for all raids / 所有团队副本默认
+AutoBalance.StatModifierRaid.CCDuration=
+AutoBalance.StatModifierRaid.Boss.CCDuration=
+
+### Default for all heroic raids / 所有英雄团队副本默认
+AutoBalance.StatModifierRaidHeroic.CCDuration=
+AutoBalance.StatModifierRaidHeroic.Boss.CCDuration=
+
+###
+### Configuring the CCDuration settings above this line will affect all dungeons and raids.
+### 在此行之上配置 CCDuration 设置将影响所有地下城和团队副本。
+### To customize settings for a particular instance size, add your value to the settings below.
+### 要为特定副本规模自定义设置，请在下方设置中添加你的值。
+###
+
+### 10-player raids / 10人团队副本
+AutoBalance.StatModifierRaid10M.CCDuration=
+AutoBalance.StatModifierRaid10M.Boss.CCDuration=
+
+### 10-player heroic raids / 10人英雄团队副本
+AutoBalance.StatModifierRaid10MHeroic.CCDuration=
+AutoBalance.StatModifierRaid10MHeroic.Boss.CCDuration=
+
+### 15-player raids / 15人团队副本
+AutoBalance.StatModifierRaid15M.CCDuration=
+AutoBalance.StatModifierRaid15M.Boss.CCDuration=
+
+### 20-player raids / 20人团队副本
+AutoBalance.StatModifierRaid20M.CCDuration=
+AutoBalance.StatModifierRaid20M.Boss.CCDuration=
+
+### 25-player raids / 25人团队副本
+AutoBalance.StatModifierRaid25M.CCDuration=
+AutoBalance.StatModifierRaid25M.Boss.CCDuration=
+
+### 25-player heroic raids / 25人英雄团队副本
+AutoBalance.StatModifierRaid25MHeroic.CCDuration=
+AutoBalance.StatModifierRaid25MHeroic.Boss.CCDuration=
+
+### 40-player raids / 40人团队副本
+AutoBalance.StatModifierRaid40M.CCDuration=
+AutoBalance.StatModifierRaid40M.Boss.CCDuration=
+
+##########################
+#
+# Stat Scaling - Stat Modifier Overrides / 属性缩放 - 属性修正器覆盖
+#
+##########################
+# A note on how the stat modifier settings are prioritized. More specific values REPLACE less-specific values.
+# 关于属性修正器设置优先级的说明。更具体的值会替换更笼统的值。
+# Bosses and non-boss creatures pull from different settings but work in a similar way.
+# Boss和非Boss生物从不同的设置中获取值，但工作方式类似。
+#
+# Boss example: High Priest Venoxis (boss, CreatureID 14507) in the Zul'Gurub 20-player raid (InstanceID 309):
+# Boss示例：高级祭司温诺希斯（Boss，生物ID 14507）在祖尔格拉布20人团队副本（副本ID 309）中：
+#
+#     StatModifierRaid.Boss.Global=     0.7
+#     StatModifierRaid20M.Boss.Global=  0.8
+#     StatModifier.Boss.PerInstance=    "309 0.9"
+#     StatModifier.PerCreature=         "14507 1.0"
+#
+# Settings are applied from top the bottom, with the bottom setting (1.0) being applied to all stats for the boss.
+# 设置从上到下应用，最底部的设置（1.0）将应用于Boss的所有属性。
+# Omitting the "PerCreature" setting would cause the per-instance setting for Zul'Gurub bosses (0.9) to be applied instead, and so on.
+# 省略"PerCreature"设置将导致祖尔格拉布Boss使用按副本设置（0.9），依此类推。
+#
+# Non-boss example: Molten Giant (non-boss, CreatureID 11658) in the Molten Core 40-player raid (InstanceID 409):
+# 非Boss示例：熔核巨人（非Boss，生物ID 11658）在熔火之心40人团队副本（副本ID 409）中：
+#
+#     StatModifierRaid.Damage =     2.1
+#     StatModifierRaid40M.Damage =  2.2
+#     StatModifier.PerInstance =    "409 -1 -1 -1 -1 2.3"
+#     StatModifier.PerCreature=     "11658 -1 -1 -1 -1 2.4"
+#
+# Settings are applied from top the bottom, with the bottom setting (2.4) being applied to the creature's damage multiplier.
+# 设置从上到下应用，最底部的设置（2.4）将应用于生物的伤害乘数。
+# Omitting the "PerCreature" setting would cause the per-instance setting for Molten Core non-boss damage (2.3) to be applied instead, and so on.
+# 省略"PerCreature"设置将导致熔火之心非Boss伤害使用按副本设置（2.3），依此类推。
+#
+# Keep in mind that you may use "-1" for any specific override stat to allow less-specific settings to come through.
+# 请记住，你可以对任何特定覆盖属性使用 "-1" 以允许更笼统的设置生效。
+#
+# In this way you can make your configs as simple or complicated as you like - if you only want to set some generic dungeon and raid modifiers, everything will
+# work as expected. If you want to tune specific creatures to your liking, you can do that too.
+# 通过这种方式，你可以让你的配置尽可能简单或复杂——如果你只想设置一些通用的地下城和团队副本修正器，一切都会按预期工作。
+# 如果你想按自己的喜好调整特定生物，也可以做到。
+#
+
+#
+#     AutoBalance.StatModifier.PerInstance
+#        Allows setting per-instance stat modifier values. Specifying a value of `-1` will skip overriding of that value.
+#        允许按副本ID设置属性修正器值。指定 `-1` 将跳过该值的覆盖。
+#        You may omit entries from the end of the string if desired. Only one set of values should be specified per InstanceID.
+#        可以省略字符串末尾的条目。每个副本ID只能指定一组值。
+#
+#        ONLY AFFECTS NON-BOSS CREATURES.
+#        仅影响非Boss生物。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        Format: "[InstanceID] [Global] [Health] [Mana] [Armor] [Damage] [CCDuration], [InstanceID] [Global] [Health] [Mana] [Armor] [Damage] [CCDuration], ..."
+#        格式："副本ID Global Health Mana Armor Damage CCDuration, ..."
+#
+#        Example: AutoBalance.StatModifier.PerInstance="409 1.0 0.8 0.8 1.0 1.2 1.0, 568 -1 -1 -1 -1 1.35, 43 -1 1.2 1.2"
+#        示例：AutoBalance.StatModifier.PerInstance="409 1.0 0.8 0.8 1.0 1.2 1.0, 568 -1 -1 -1 -1 1.35, 43 -1 1.2 1.2"
+#
+#        Default: Empty string, which disables the feature.
+#        默认值：空字符串（禁用此功能）
+AutoBalance.StatModifier.PerInstance=""
+
+#
+#     AutoBalance.StatModifier.Boss.PerInstance
+#        Allows setting per-instance stat modifier values for bosses only. Specifying a value of `-1` will skip overriding of that value.
+#        允许按副本ID仅为Boss设置属性修正器值。指定 `-1` 将跳过该值的覆盖。
+#        You may omit entries from the end of the string if desired. Only one set of values should be specified per InstanceID.
+#        可以省略字符串末尾的条目。每个副本ID只能指定一组值。
+#
+#        ONLY AFFECTS BOSSES.
+#        仅影响Boss。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        Format: "[InstanceID] [Boss.Global] [Boss.Health] [Boss.Mana] [Boss.Armor] [Boss.Damage] [Boss.CCDuration], ..."
+#        格式："副本ID Boss.Global Boss.Health Boss.Mana Boss.Armor Boss.Damage Boss.CCDuration, ..."
+#
+#        Example: AutoBalance.StatModifier.Boss.PerInstance="409 1.0 0.8 0.8 1.0 1.2 0.8, 568 -1 -1 -1 -1 1.35, 43 -1 1.2 1.2"
+#        示例：AutoBalance.StatModifier.Boss.PerInstance="409 1.0 0.8 0.8 1.0 1.2 0.8, 568 -1 -1 -1 -1 1.35, 43 -1 1.2 1.2"
+#
+#        Default: Empty string, which disables the feature.
+#        默认值：空字符串（禁用此功能）
+AutoBalance.StatModifier.Boss.PerInstance=""
+
+#
+#     AutoBalance.StatModifier.Boss.PerCreature
+#        Allows setting per-creature stat modifier values. Specifying a value of `-1` will skip overriding of that value.
+#        允许按生物ID设置属性修正器值。指定 `-1` 将跳过该值的覆盖。
+#        You may omit entries from the end of the string if desired. Only one set of values should be specified per CreatureID.
+#        可以省略字符串末尾的条目。每个生物ID只能指定一组值。
+#
+#        Format: "[CreatureID] [Global] [Health] [Mana] [Armor] [Damage] [CCDuration], ..."
+#        格式："生物ID Global Health Mana Armor Damage CCDuration, ..."
+#
+#        Example: AutoBalance.StatModifier.Boss.PerInstance="14507 1.0 0.8 0.8 1.0 1.2 0.5, 11372 -1 -1 -1 -1 1.35, 43 -1 1.2 1.2"
+#        示例：AutoBalance.StatModifier.Boss.PerInstance="14507 1.0 0.8 0.8 1.0 1.2 0.5, 11372 -1 -1 -1 -1 1.35, 43 -1 1.2 1.2"
+#
+#        Default: Empty string, which disables the feature.
+#        默认值：空字符串（禁用此功能）
+AutoBalance.StatModifier.PerCreature=""
+
+#
+#     AutoBalance.MinHPModifier
+#        Minimum Modifier setting for Health Modification. An enemy's health will not be multiplied by a value smaller than this.
+#        生命值修正的最小修正器设置。敌人的生命值不会被小于此值的数乘。
+#        Default:     0.01
+#        默认值：0.01
+AutoBalance.MinHPModifier=0.01
+
+#
+#     AutoBalance.MinManaModifier
+#        Minimum Modifier setting for Mana Modification. An enemy's mana will not be multiplied by a value smaller than this.
+#        法力值修正的最小修正器设置。敌人的法力值不会被小于此值的数乘。
+#        Default:     0.01
+#        默认值：0.01
+AutoBalance.MinManaModifier=0.01
+
+#
+#     AutoBalance.MinDamageModifier
+#        Minimum Modifier setting for Damage Modification. An enemy's damage will not be multiplied by a value smaller than this.
+#        伤害修正的最小修正器设置。敌人的伤害不会被小于此值的数乘。
+#        Default:     0.01
+#        默认值：0.01
+AutoBalance.MinDamageModifier=0.01
+
+#
+#     AutoBalance.MinCCDurationModifier
+#        Minimum Modifier setting for Crowd Control Duration. The duration of an enemy's CC will not be multiplied by a value smaller than this.
+#        控制效果持续时间的最小修正器设置。敌人CC的持续时间不会被小于此值的数乘。
+#        Default:     0.25
+#        默认值：0.25
+AutoBalance.MinCCDurationModifier=0.25
+
+#
+#     AutoBalance.MaxCCDurationModifier
+#        Maximum Modifier setting for Crowd Control Duration. The duration of an enemy's CC will not be multiplied by a value greater than this.
+#        控制效果持续时间的最大修正器设置。敌人CC的持续时间不会被大于此值的数乘。
+#        Default:     1.0
+#        默认值：1.0
+AutoBalance.MaxCCDurationModifier=1.0
+
+##########################
+#
+# Misc Settings / 杂项设置
+#
+##########################
+
+#
+#     AutoBalance.ForcedIDXX
+#        Sets MobIDs for the group they belong to.
+#        设置生物ID所属的分组。
+#        All 5-player creatures should go in AutoBalance.ForcedID5=
+#        所有5人副本生物应放入 AutoBalance.ForcedID5=
+#        All 10-player creatures should go in AutoBalance.ForcedID10=
+#        所有10人副本生物应放入 AutoBalance.ForcedID10=
+#        All X-player creatures should go in AutoBalance.ForcedIDX=
+#        所有X人副本生物应放入 AutoBalance.ForcedIDX=
+AutoBalance.ForcedID40=""
+AutoBalance.ForcedID25=""
+AutoBalance.ForcedID20=""
+AutoBalance.ForcedID10=""
+AutoBalance.ForcedID5=""
+AutoBalance.ForcedID2=""
+
+#
+#     AutoBalance.DisabledID
+#        Disable scaling on specific creatures
+#        禁用特定生物的缩放
+#
+AutoBalance.DisabledID=""
+
+##########################
+#
+# Level Scaling / 等级缩放
+#
+##########################
+
+#
+#     AutoBalance.LevelScaling
+#        Scale creatures in instances based on the highest-level player.
+#        基于最高等级玩家缩放副本中的生物。
+#        0 = Disabled / 0 = 禁用
+#        1 = Enabled (only in dungeons/raids) / 1 = 启用（仅地下城/团队副本）
+#        Default:     1
+#        默认值：1
+AutoBalance.LevelScaling=1
+
+#
+#     AutoBalance.LevelScaling.Method
+#        Selects which method should be used when the level for scaled creatures.
+#        选择缩放生物等级时使用的方法。
+#
+#           fixed: / 固定：
+#               Creatures will be scaled to the level of the highest-level player in the group.
+#               生物将被缩放为队伍中最高等级玩家的等级。
+#
+#           dynamic: / 动态：
+#               Creatures will be scaled to a level based on 1) their original assignments compared to the
+#               highest-level creature in the instance and 2) the highest-level player in the dungeon. This
+#               means that lower-level trash will still be lower level than you, and higher-level bosses
+#               will still be higher-level than you.
+#               生物将根据以下因素缩放等级：1）它们相对于副本中最高等级生物的原始分配，2）副本中最高等级的玩家。
+#               这意味着低级小怪仍然比你等级低，高级Boss仍然比你等级高。
+#
+#        Possible values: "fixed" or "dynamic"
+#        可选值："fixed"（固定）或 "dynamic"（动态）
+#
+#        Default: "dynamic"
+#        默认值："dynamic"
+AutoBalance.LevelScaling.Method="dynamic"
+
+#
+#     AutoBalance.LevelScaling.SkipHigherLevels
+#        If an instance's average creature level is no more than (SkipHigherLevels) levels
+#        above the highest player level, do not scale down.
+#        如果副本的平均生物等级不超过最高等级玩家等级的（SkipHigherLevels）级，则不向下缩放。
+#
+#        To disable scaling instance levels DOWN, set this to the max level of your server (likely 80).
+#        要禁用向下缩放副本等级，将其设为服务器最大等级（通常为80）。
+#        To disable this feature entirely and scale all higher-level instances, set this to 0.
+#        要完全禁用此功能并缩放所有高等级副本，将其设为 0。
+#
+#        Default: 3
+#        默认值：3
+#
+#     AutoBalance.LevelScaling.SkipLowerLevels
+#        If an instance's average creature level is no more than (SkipLowerLevels) levels
+#        below of the Highest player level, do not scale up.
+#        如果副本的平均生物等级不低于最高等级玩家等级的（SkipLowerLevels）级，则不向上缩放。
+#
+#        To disable scaling instance levels UP, set this to the max level of your server (likely 80).
+#        要禁用向上缩放副本等级，将其设为服务器最大等级（通常为80）。
+#        To disable this feature entirely and scale all lower-level instances, set this to 0.
+#        要完全禁用此功能并缩放所有低等级副本，将其设为 0。
+#
+#        Default: 5
+#        默认值：5
+AutoBalance.LevelScaling.SkipHigherLevels = 3
+AutoBalance.LevelScaling.SkipLowerLevels = 5
+
+#
+#     AutoBalance.LevelScaling.DynamicLevel.Ceiling.*
+#        Sets the maximum number of levels creatures scaled in "dynamic" mode can be OVER your highest-level
+#        player. The creature in the dungeon with the highest original level will be set to the highest-level
+#        player's level + this value.
+#        设置"动态"模式下缩放的生物可以超过最高等级玩家的最高等级数。副本中原始等级最高的生物将被设为最高等级玩家等级 + 此值。
+#
+#        Only takes effect if AutoBalance.LevelScaling.Method = "dynamic"
+#        仅在 AutoBalance.LevelScaling.Method = "dynamic" 时生效
+#
+#        Default: 1 (Dungeons), 2 (Heroic Dungeons), 3 (Raids), 3 (Heroic Raids)
+#        默认值：1（地下城），2（英雄地下城），3（团队副本），3（英雄团队副本）
+#
+#     AutoBalance.LevelScaling.DynamicLevel.Floor.*
+#        Sets the maximum number of levels creatures scaled in "dynamic" mode can be UNDER your highest-level
+#        player. For instances with wide level spreads, ensures that the level differences stay reasonable.
+#        设置"动态"模式下缩放的生物可以低于最高等级玩家的最高等级数。对于等级范围较宽的副本，确保等级差异保持合理。
+#
+#        Only takes effect if AutoBalance.LevelScaling.Method = "dynamic"
+#        仅在 AutoBalance.LevelScaling.Method = "dynamic" 时生效
+#
+#        Default: 5
+#        默认值：5
+AutoBalance.LevelScaling.DynamicLevel.Ceiling.Dungeons = 1
+AutoBalance.LevelScaling.DynamicLevel.Floor.Dungeons = 5
+
+AutoBalance.LevelScaling.DynamicLevel.Ceiling.HeroicDungeons = 2
+AutoBalance.LevelScaling.DynamicLevel.Floor.HeroicDungeons = 5
+
+AutoBalance.LevelScaling.DynamicLevel.Ceiling.Raids = 3
+AutoBalance.LevelScaling.DynamicLevel.Floor.Raids = 5
+
+AutoBalance.LevelScaling.DynamicLevel.Ceiling.HeroicRaids = 3
+AutoBalance.LevelScaling.DynamicLevel.Floor.HeroicRaids = 5
+
+#
+#     AutoBalance.LevelScaling.DynamicLevel.PerInstance
+#        Allows setting per-instance Dynamic Level options. Specifying a value of `-1` will skip overriding of that value.
+#        允许按副本ID设置动态等级选项。指定 `-1` 将跳过该值的覆盖。
+#        You may omit entries from the end of the string if desired. Only one set of values should be specified per InstanceID.
+#        可以省略字符串末尾的条目。每个副本ID只能指定一组值。
+#        Set to a value of "" to disable the feature.
+#        设为 "" 可禁用此功能。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        Format: "[InstanceID] [SkipHigherLevels] [SkipLowerLevels] [DynamicLevelCeiling] [DynamicLevelFloor], ..."
+#        格式："副本ID SkipHigherLevels SkipLowerLevels DynamicLevelCeiling DynamicLevelFloor, ..."
+#
+#        Example: AutoBalance.StatModifier.PerInstance="409 -1 -1 0 3, 568 3, 43 -1 8"
+#        示例：AutoBalance.StatModifier.PerInstance="409 -1 -1 0 3, 568 3, 43 -1 8"
+#
+#        Default: "229 -1 -1 1, 230 0 0" (Recommended adjustments)
+#        默认值："229 -1 -1 1, 230 0 0"（推荐调整）
+#
+# 229 - Blackrock Spire / 黑石塔
+# 230 - Blackrock Depths / 黑石深渊
+AutoBalance.LevelScaling.DynamicLevel.PerInstance="229 -1 -1 1, 230 0 0"
+
+#
+#     AutoBalance.LevelScaling.DynamicLevel.DistanceCheck.PerInstance
+#        Some dungeons contain multiple wings that exist in the same InstanceID. These wings may have different level requirements.
+#        某些地下城包含多个存在于同一副本ID中的区域。这些区域可能有不同的等级要求。
+#        You may set this setting per-instance to ensure that only creatures within [WorldUnits] of any player are included in the
+#        instance level calculation. This will improve the accuracy of creature levels in instances that contain multiple wings.
+#        你可以按副本ID设置此选项，确保只有在玩家 [世界单位] 范围内的生物才会被纳入副本等级计算。
+#        这将提高包含多个区域的副本中生物等级的准确性。
+#
+#        NOTE: If two players in a party enter two different wings of the same InstanceID at the same time, creature levels will be
+#              calculated incorrectly until one of those players leaves the instance.
+#        注意：如果队伍中的两名玩家同时进入同一副本ID的两个不同区域，在其中一名玩家离开副本之前，生物等级将被错误计算。
+#
+#        Get a list of Instance IDs here: https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#        在此查看副本ID列表：https://wowpedia.fandom.com/wiki/InstanceID#Classic
+#
+#        Format: "[InstanceID] [WorldUnits]"
+#        格式："副本ID 世界单位"
+#
+#        Example: AutoBalance.LevelScaling.DynamicLevel.DistanceCheck.PerInstance="189 500, 624 250"
+#        示例：AutoBalance.LevelScaling.DynamicLevel.DistanceCheck.PerInstance="189 500, 624 250"
+#
+#        Default: "189 500" (Recommended adjustments)
+#        默认值："189 500"（推荐调整）
+#
+# 189 - Scarlet Monastery / 血色修道院
+AutoBalance.LevelScaling.DynamicLevel.DistanceCheck.PerInstance="189 500"
+
+##########################
+#
+# Reward Scaling / 奖励缩放
+#
+##########################
+
+#
+#     AutoBalance.RewardScaling.Method
+#        Sets which method should be used when scaling down XP and Money in an instance.
+#        设置在副本中缩放经验值和金币时使用的方法。
+#
+#           fixed: / 固定：
+#               XP and Money will be divided by the maximum number of players in the group
+#               regardless of scaling settings. Each player will receive the calculated value.
+#               经验值和金币将按队伍最大人数均分，无论缩放设置如何。每位玩家将获得计算后的值。
+#
+#           dynamic: / 动态：
+#               XP and Money will be scaled based on the the health and damage modifiers that are applied to
+#               the creature. Level scaling is taken into account when determining the reward scaling.
+#               经验值和金币将基于应用于生物的生命值和伤害修正器进行缩放。等级缩放在确定奖励缩放时也会被考虑。
+#
+#               If scaling determines that a creature should have an XP scaling multiplier of .65, the creature
+#               will create 65% of the XP you would normally recieve from a creature at the scaled level.
+#               如果缩放确定生物的经验缩放乘数为 0.65，则该生物将产生缩放等级下正常经验值的 65%。
+#
+#               If scaling determines that a creature should have a money scaling multiplier of 1.5, the creature
+#               will create 150% of the money it would have at its original level and scaling.
+#               如果缩放确定生物的金币缩放乘数为 1.5，则该生物将产生其原始等级和缩放下金币的 150%。
+#
+#               The XP and money is evenly split amongst all players in the instance.
+#               经验值和金币在副本中所有玩家之间均分。
+#
+#        Possible values: "fixed" or "dynamic"
+#        可选值："fixed"（固定）或 "dynamic"（动态）
+#
+#        Default: "dynamic"
+#        默认值："dynamic"
+AutoBalance.RewardScaling.Method="dynamic"
+
+#
+#     AutoBalance.RewardScaling.XP
+#        Scale XP based on the `AutoBalance.RewardScaling.Method` selection.
+#        根据 `AutoBalance.RewardScaling.Method` 的选择缩放经验值。
+#
+#        Default: 1 (1 = ON, 0 = OFF)
+#        默认值：1（1 = 开启，0 = 关闭）
+#
+#     AutoBalance.RewardScaling.XP.Modifier
+#        Apply a flat modifier to the amount of XP that is rewarded to players.
+#        对奖励给玩家的经验值应用平滑修正。
+#
+#        Only takes effect if `AutoBalance.RewardScaling.XP` is 1.
+#        仅在 `AutoBalance.RewardScaling.XP` 为 1 时生效。
+#
+#        If `RewardScaling.XP.Modifier` is set to 1.5 and RewardScaling determines that 100xp should be
+#        rewarded to each player, 150xp will be rewarded.
+#        如果 `RewardScaling.XP.Modifier` 设为 1.5，且奖励缩放确定应奖励每位玩家 100xp，则实际奖励 150xp。
+#
+#        Default: 1.0 (no change)
+#        默认值：1.0（无变化）
+AutoBalance.RewardScaling.XP = 1
+AutoBalance.RewardScaling.XP.Modifier = 1.0
+
+#
+#     AutoBalance.RewardScaling.Money
+#        Scale Money drops based on the `AutoBalance.RewardScaling.Method` selection. If set to 0, the full
+#        amount will be rewarded.
+#        根据 `AutoBalance.RewardScaling.Method` 的选择缩放金币掉落。如果设为 0，将奖励全额。
+#
+#        Default: 1 (1 = ON, 0 = OFF)
+#        默认值：1（1 = 开启，0 = 关闭）
+#
+#     AutoBalance.RewardScaling.Money.Modifier
+#        Apply a flat modifier to the amount of money that is rewarded to players.
+#        对奖励给玩家的金币数量应用平滑修正。
+#
+#        Only takes effect if `AutoBalance.RewardScaling.Money` is 1.
+#        仅在 `AutoBalance.RewardScaling.Money` 为 1 时生效。
+#
+#        If `RewardScaling.Money.Modifier` is set to 1.5 and RewardScaling determines that 1 gold should be
+#        rewarded to each player, 1 gold 50 silver will be rewarded.
+#        如果 `RewardScaling.Money.Modifier` 设为 1.5，且奖励缩放确定应奖励每位玩家 1金币，则实际奖励 1金币50银币。
+#
+#        Default: 1.0 (no change)
+#        默认值：1.0（无变化）
+AutoBalance.RewardScaling.Money = 1
+AutoBalance.RewardScaling.Money.Modifier = 1.0
+
+#
+#     AutoBalance.RewardScaling.DropRate
+#        Scale item drop rates based on the instance player count. If set to 0, items will use their
+#        original drop rates from the database.
+#        根据副本玩家数量缩放物品掉落概率。设为 0 则使用数据库中的原始掉率。
+#
+#        Default: 0 (1 = ON, 0 = OFF)
+#        默认值：0（1 = 开启，0 = 关闭）
+#
+#     AutoBalance.RewardScaling.DropRate.Modifier
+#        Apply a flat modifier to the calculated drop rate multiplier.
+#        对计算出的掉率乘数应用平滑修正。
+#
+#        Only takes effect if `AutoBalance.RewardScaling.DropRate` is 1.
+#        仅在 `AutoBalance.RewardScaling.DropRate` 为 1 时生效。
+#
+#        If `RewardScaling.DropRate.Modifier` is set to 1.5 and the player count multiplier is 0.5,
+#        the final drop rate multiplier will be 0.75.
+#        如果 `RewardScaling.DropRate.Modifier` 设为 1.5，且玩家数量乘数为 0.5，则最终掉率乘数为 0.75。
+#
+#        Default: 1.0 (no change)
+#        默认值：1.0（无变化）
+AutoBalance.RewardScaling.DropRate = 0
+AutoBalance.RewardScaling.DropRate.Modifier = 1.0
+
+##########################
+#
+# Messages / 消息通知
+#
+##########################
+
+#
+#     AutoBalance.PlayerChangeNotify
+#        Set Auto Notifications to all players in Instance that player count has changed.
+#        设置自动通知副本内所有玩家玩家数已变化。
+#        Default:     1 (1 = ON, 0 = OFF)
+#        默认值：1（1 = 开启，0 = 关闭）
+AutoBalance.PlayerChangeNotify=1
+
+##########################
+#
+# REWARD SYSTEM (experimental) / 奖励系统（实验性）
+#
+##########################
+
+#
+#   AutoBalance.reward.enable
+#       This is an experimental feature to reward a player that kill a boss when
+#       a pre-wotlk dungeon/raid is completed with creature levelling enabled.
+#       这是一个实验性功能，在开启生物等级缩放的情况下完成巫妖王之怒之前的地下城/团队副本时，
+#       This is an idea to boost old contents even if you're end-game player.
+#       奖励击杀Boss的玩家。即使你是终局玩家，这个想法也能提升旧内容的价值。
+#
+#       Default:     0 (1 = ON, 0 = OFF)
+#       默认值：0（1 = 开启，0 = 关闭）
+AutoBalance.reward.enable = 0
+
+
+#
+#   AutoBalance.reward.raidToken
+#   AutoBalance.reward.dungeonToken
+#       团队副本奖励代币 / 副本奖励代币
+#
+#       Default:
+#       默认值：
+#           raidToken -> emblem of frost (49426) / 团队代币 -> 冰霜纹章（49426）
+#           dungeonToken -> emblem of triumph (47241) / 副本代币 -> 凯旋纹章（47241）
+AutoBalance.reward.raidToken    = 49426
+AutoBalance.reward.dungeonToken = 47241
+
+#
+#   AutoBalance.reward.MinPlayerReward
+#       This conf option checks how many players are in the same
+#       map before allowing the reward to be carried out
+#       此配置选项检查同一地图中有多少玩家，然后才允许执行奖励。
+#       if MinPlayerReward is set to two and player is soloing this conf doesn't reward then.
+#       如果 MinPlayerReward 设为 2 且玩家单人游戏，则不会获得奖励。
+#		this will give more a challenge to players for low level instances.
+#       这将给低等级副本的玩家带来更多挑战。
+#
+#       Default:     1
+#       默认值：1
+AutoBalance.reward.MinPlayerReward = 1
+
+##########################
+#
+# Announcement / 公告
+#
+##########################
+
+#
+#     AutoBalanceAnnounce.enable
+#        Announce the module on login if it is enabled
+#        如果模块已启用，在登录时公告该模块
+#        Default:     1 (1 = ON, 0 = OFF)
+#        默认值：1（1 = 开启，0 = 关闭）
+AutoBalanceAnnounce.enable=1
+
+##########################
+#
+# Deprecated Settings / 已弃用设置
+#
+##########################
+
+# The following variables are deprecated and should not be used in new deployments. Their values should be left blank.
+# 以下变量已弃用，不应在新部署中使用。它们的值应留空。
+# They will still be applied to support backwards compatability, but will be removed entirely in a future release.
+# 它们仍将被应用以支持向后兼容，但在未来版本中将被完全移除。
+# Their entire functionality (and more) has been moved to new settings referenced in this config file.
+# 它们的全部功能（以及更多）已移至本配置文件中引用的新设置。
+#
+AutoBalance.enable=
+AutoBalance.PerDungeonScaling=
+AutoBalance.PerDungeonBossScaling=
+AutoBalance.BossInflectionMult=
+AutoBalance.rate.global=
+AutoBalance.rate.health=
+AutoBalance.rate.mana=
+AutoBalance.rate.armor=
+AutoBalance.rate.damage=
+AutoBalance.DungeonScaleDownXP=
+AutoBalance.DungeonScaleDownMoney=
+AutoBalance.LevelHigherOffset=
+AutoBalance.LevelLowerOffset=
+AutoBalance.PerDungeonPlayerCounts=
+
+# The following variables have been removed entirely and should not be used in a new or existing deployment.
+# 以下变量已完全移除，不应在新旧部署中使用。
+# Their values should be left blank.
+# 它们的值应留空。
+# Their entire functionality (and more) has been moved to new settings referenced in this config file.
+# 它们的全部功能（以及更多）已移至本配置文件中引用的新设置。
+AutoBalance.DungeonsOnly=
+AutoBalance.levelUseDbValuesWhenExists=

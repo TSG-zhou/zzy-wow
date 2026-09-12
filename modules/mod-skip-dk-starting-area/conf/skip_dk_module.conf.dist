@@ -1,0 +1,66 @@
+[worldserver]
+
+#
+#    跳过死亡骑士新手村
+#        如果你想跳过死亡骑士新手村，请启用此模块。
+#        以 58 级死亡骑士出生，并学会符文熔铸。
+#
+#    Skip.Deathknight.Starter.Announce.enable
+#         说明：玩家登录时 announce 模块信息。
+#         默认值：    0 -（禁用）
+#                     1 -（启用）
+#
+
+Skip.Deathknight.Starter.Announce.enable = 1
+
+#
+#    Skip.DeathKnight.Starter.Enable
+#         对所有新账号生效，无视账号等级。创建 DK 时立刻跳过新手村。
+#         默认值：    0 -（禁用）
+#                     1 -（启用）
+#
+
+Skip.Deathknight.Starter.Enable = 1
+
+#
+#    GM.Skip.Deathknight.Starter.Enable
+#         仅对 GM 等级账号的新账号生效。创建 DK 时立刻跳过新手村。
+#         使用此项时，请确保 Skip.Deathknight.Starter.Enable 设为 0。
+#         默认值：    0 -（禁用）
+#                     1 -（启用）
+#
+
+GM.Skip.Deathknight.Starter.Enable = 0
+
+#
+#    Skip.Deathknight.Start.Level
+#         使用模块时，死亡骑士的起始等级。
+#         默认值：    58 -（默认）
+#
+#
+
+Skip.Deathknight.Start.Level = 55
+
+#
+#    Skip.Deathknight.Start.Trained
+#         自动训练到 58 级对应的技能，模拟完成新手村后的状态。
+#         默认值：    0 -（未激活）
+#
+
+Skip.Deathknight.Start.Trained = 0
+
+#
+#    Skip.Deathknight.Optional.Enable
+#    首次创建 DK 并与巫妖王对话时，提供是否跳过新手村的选项。
+#    默认值：    1 -（启用）
+#
+
+Skip.Deathknight.Optional.Enable = 1
+
+#
+#    DeleteGold.Deathknight.Optional.Enable
+#    跳过 DK 新手村时，删除任务奖励的所有金币，防止利用该机制刷金。
+#    默认值：    1 -（启用）
+#
+
+DeleteGold.Deathknight.Optional.Enable = 1

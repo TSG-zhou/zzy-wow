@@ -1,0 +1,41 @@
+#
+# Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
+#
+
+[worldserver]
+
+########################################
+# Multi-Service NPC (Entry 190002)
+########################################
+
+# Enable the multi-service NPC module
+# Default: 1
+MultiServiceNPC.Enable = 1
+
+# Shop - vendor window
+# Default: 1
+MultiServiceNPC.EnableShop = 1
+
+# Remote Bank
+# Default: 1
+MultiServiceNPC.EnableBank = 1
+
+# Pet Stable
+# Default: 1
+MultiServiceNPC.EnableStable = 1
+
+# Instance Reset
+# Default: 1
+MultiServiceNPC.EnableInstanceReset = 1
+
+# Remove Combat
+# Default: 1
+MultiServiceNPC.EnableRemoveCombat = 1
+
+# Lock/Unlock XP
+# Default: 1
+MultiServiceNPC.EnableXPToggle = 1
+
+# Faction Change
+# Default: 1
+MultiServiceNPC.EnableFactionChange = 1
