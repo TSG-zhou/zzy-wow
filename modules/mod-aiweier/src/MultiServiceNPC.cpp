@@ -13,6 +13,8 @@
 #include "ScriptedGossip.h"
 #include "WorldSession.h"
 #include "Map.h"
+#include "MapMgr.h"
+#include "InstanceSaveMgr.h"
 
 // Config enum
 enum MultiServiceConfig
@@ -216,10 +218,57 @@ public:
 
             case ACTION_RESET:
             {
-                Player::ResetInstances(
-                    player->GetGUID(), INSTANCE_RESET_ALL, false);
-                ChatHandler(player->GetSession()).PSendSysMessage(
-                    "副本已重置。\nInstances have been reset.");
+                uint8 totalReset = 0;
+                for (uint8 diff = DUNGEON_DIFFICULTY_NORMAL;
+                     diff <= DUNGEON_DIFFICULTY_HEROIC; ++diff)
+                {
+                    std::vector<InstanceSave*> toUnbind;
+                    BoundInstancesMap const& boundInstances =
+                        sInstanceSaveMgr->PlayerGetBoundInstances(
+                            player->GetGUID(), Difficulty(diff));
+
+                    for (auto const& kv : boundInstances)
+                    {
+                        InstanceSave* instanceSave = kv.second.save;
+                        MapEntry const* entry =
+                            sMapStore.LookupEntry(kv.first);
+
+                        if (!entry || entry->IsRaid())
+                            continue;
+
+                        Map* map = sMapMgr->FindMap(
+                            instanceSave->GetMapId(),
+                            instanceSave->GetInstanceId());
+
+                        if (!map ||
+                            map->ToInstanceMap()->Reset(
+                                INSTANCE_RESET_ALL))
+                        {
+                            player->SendResetInstanceSuccess(
+                                instanceSave->GetMapId());
+                            toUnbind.push_back(instanceSave);
+                            ++totalReset;
+                        }
+                        else
+                        {
+                            player->SendResetInstanceFailed(
+                                INSTANCE_RESET_FAILED,
+                                instanceSave->GetMapId());
+                        }
+
+                        sInstanceSaveMgr->DeleteInstanceSavedData(
+                            instanceSave->GetInstanceId());
+                    }
+
+                    for (InstanceSave* save : toUnbind)
+                        sInstanceSaveMgr->UnbindAllFor(save);
+                }
+
+                if (totalReset > 0)
+                    ChatHandler(player->GetSession()).PSendSysMessage("已重置副本（含普通与英雄）");
+                else
+                    ChatHandler(player->GetSession()).PSendSysMessage("没有可重置的5人副本存档。");
+
                 CloseGossipMenuFor(player);
                 break;
             }
