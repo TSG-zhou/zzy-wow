@@ -181,7 +181,7 @@ struct boss_lady_vashj : public BossAI
         }).Schedule(0s, [this](TaskContext context)
         {
             DoCastSelf(SPELL_SUMMON_ENCHANTED_ELEMENTAL, true);
-            context.Repeat(2500ms);
+            context.Repeat(5000ms);
         }).Schedule(45s, [this](TaskContext context)
         {
             DoCastSelf(SPELL_SUMMON_COILFANG_ELITE, true);

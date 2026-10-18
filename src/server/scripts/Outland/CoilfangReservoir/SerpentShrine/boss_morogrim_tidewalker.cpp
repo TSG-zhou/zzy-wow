@@ -135,7 +135,7 @@ class spell_morogrim_tidewalker_watery_grave : public SpellScript
 
     void FilterTargets(std::list<WorldObject*>& targets)
     {
-        uint8 maxSize = 4;
+        uint8 maxSize = 2;
         Unit* caster = GetCaster();
 
         targets.remove_if([caster](WorldObject const* target) -> bool
@@ -154,7 +154,7 @@ class spell_morogrim_tidewalker_watery_grave : public SpellScript
     {
         PreventHitDefaultEffect(effIndex);
         if (Unit* target = GetHitUnit())
-            if (_targetNumber < 4)
+            if (_targetNumber < 2)
                 GetCaster()->CastSpell(target, wateryGraveIds[_targetNumber++], true);
     }
 

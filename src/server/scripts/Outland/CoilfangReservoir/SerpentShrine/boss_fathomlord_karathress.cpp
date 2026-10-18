@@ -151,7 +151,7 @@ struct boss_fathomlord_karathress : public BossAI
             {
                 me->CastSpell(target, SPELL_CATACLYSMIC_BOLT);
             }
-            context.Repeat(6s);
+            context.Repeat(12s);
         }).Schedule(25s, [this](TaskContext context)
         {
             DoCastSelf(SPELL_SEAR_NOVA);
