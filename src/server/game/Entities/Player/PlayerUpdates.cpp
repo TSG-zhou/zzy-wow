@@ -1582,8 +1582,13 @@ void Player::AtExitCombat()
 
 void Player::UpdatePotionCooldown(Spell* spell)
 {
-    // no potion used i combat or still in combat
-    if (!GetLastPotionId() || IsInCombat())
+    // no potion used
+    if (!GetLastPotionId())
+        return;
+
+    // potions start their cooldown right after use even in combat; other event-based
+    // item cooldowns still wait until combat ends
+    if (IsInCombat() && (!spell || !spell->IsPotionCast()))
         return;
 
     // Call not from spell cast, send cooldown event for item spells if no in

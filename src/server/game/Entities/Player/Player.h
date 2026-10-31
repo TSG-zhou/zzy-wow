@@ -2870,7 +2870,7 @@ protected:
     PlayerMails m_mail;
     PlayerSpellMap m_spells;
     PlayerTalentMap m_talents;
-    uint32 m_lastPotionId;                              // last used health/mana potion in combat, that block next potion use
+    uint32 m_lastPotionId;                              // last item awaiting its event-based cooldown
 
     GlobalCooldownMgr m_GlobalCooldownMgr;
 

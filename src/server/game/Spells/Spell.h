@@ -534,6 +534,7 @@ public:
 
     SpellInfo const* const m_spellInfo;
     Item* m_CastItem;
+    bool m_isPotionCast;
     Item* m_weaponItem;
     ObjectGuid m_castItemGUID;
     uint8 m_cast_count;
@@ -571,6 +572,7 @@ public:
     bool IsChannelActive() const { return m_caster->GetUInt32Value(UNIT_CHANNEL_SPELL) != 0; }
     bool IsAutoActionResetSpell() const;
     bool IsIgnoringCooldowns() const;
+    bool IsPotionCast() const { return m_isPotionCast; }
 
     bool IsDeletable() const { return !m_referencedFromCurrentSpell && !m_executedCurrently; }
     void SetReferencedFromCurrent(bool yes) { m_referencedFromCurrentSpell = yes; }
