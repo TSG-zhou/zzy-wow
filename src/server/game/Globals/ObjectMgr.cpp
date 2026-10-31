@@ -6585,6 +6585,9 @@ void ObjectMgr::LoadInstanceTemplate()
 
         _instanceTemplateStore[mapID] = instanceTemplate;
 
+        // [MountDebug] print the value loaded for each instance template
+        LOG_INFO("server.loading", "[MountDebug] instance_template loaded: map {}, allowMount {}", mapID, instanceTemplate.AllowMount);
+
         ++count;
     } while (result->NextRow());
 

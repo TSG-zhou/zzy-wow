@@ -265,6 +265,9 @@ void WorldSession::HandleMoveWorldportAck()
         allowMount = mInstance->AllowMount;
     }
 
+    // [MountDebug] print the enter-map mount decision
+    LOG_INFO("server.loading", "[MountDebug] enter map {} allowMount {}", mEntry->MapID, allowMount);
+
     // mount allow check
     if (!allowMount)
         _player->RemoveAurasByType(SPELL_AURA_MOUNTED);

@@ -1542,6 +1542,16 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         }
     }
 
+    // [自定义] 副本/团本内禁止施放飞行类法术（地球可飞不受影响；陆地坐骑不受影响）
+    if (MapEntry const* mapEntry = sMapStore.LookupEntry(map_id))
+    {
+        if (mapEntry->IsDungeon() && !mapEntry->IsBattlegroundOrArena() &&
+            (HasAura(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) || HasAura(SPELL_AURA_FLY)))
+        {
+            return SPELL_FAILED_INCORRECT_AREA;
+        }
+    }
+
     // raid instance limitation
     if (HasAttribute(SPELL_ATTR6_NOT_IN_RAID_INSTANCES))
     {
