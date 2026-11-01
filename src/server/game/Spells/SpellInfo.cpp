@@ -907,6 +907,16 @@ bool SpellInfo::HasAura(AuraType aura) const
     return false;
 }
 
+bool SpellInfo::IsFlyingMount() const
+{
+    return HasAura(SPELL_AURA_FLY) || HasAura(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
+}
+
+bool SpellInfo::IsGroundMount() const
+{
+    return HasAura(SPELL_AURA_MOUNTED) && !IsFlyingMount();
+}
+
 bool SpellInfo::HasAnyAura() const
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
@@ -1537,16 +1547,6 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         }
 
         if (!areaEntry || !areaEntry->IsFlyable() || (strict && (areaEntry->flags & AREA_FLAG_NO_FLY_ZONE) != 0) || !player->canFlyInZone(map_id, zone_id, this))
-        {
-            return SPELL_FAILED_INCORRECT_AREA;
-        }
-    }
-
-    // [自定义] 副本/团本内禁止施放飞行类法术（地球可飞不受影响；陆地坐骑不受影响）
-    if (MapEntry const* mapEntry = sMapStore.LookupEntry(map_id))
-    {
-        if (mapEntry->IsDungeon() && !mapEntry->IsBattlegroundOrArena() &&
-            (HasAura(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) || HasAura(SPELL_AURA_FLY)))
         {
             return SPELL_FAILED_INCORRECT_AREA;
         }

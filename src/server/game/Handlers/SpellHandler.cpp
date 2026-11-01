@@ -384,10 +384,6 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
 
     recvPacket >> castCount >> spellId >> castFlags;
-    // [MountDebug] probe: mount cast packet arrived at server (opcode layer)
-    if (SpellInfo const* mInfo = sSpellMgr->GetSpellInfo(spellId))
-        if (mInfo->HasAura(SPELL_AURA_MOUNTED))
-            LOG_INFO("server.loading", "[MountDebug] cast opcode arrived: spell {} map {} player {}", spellId, _player->GetMapId(), _player->GetName());
 
     TriggerCastFlags triggerFlag = TRIGGERED_NONE;
 

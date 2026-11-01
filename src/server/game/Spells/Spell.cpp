@@ -3452,12 +3452,6 @@ bool Spell::UpdateChanneledTargetList()
 
 SpellCastResult Spell::prepare(SpellCastTargets const* targets, AuraEffect const* triggeredByAura)
 {
-    // [MountDebug] probe: mount spell entered prepare with full caster state
-    if (m_spellInfo->HasAura(SPELL_AURA_MOUNTED))
-        LOG_INFO("server.loading", "[MountDebug] prepare enter: spell {} caster {} map {} area {} zone {} water {} combat {} mounted {} shapeshift {} transform {}",
-            m_spellInfo->Id, m_caster->GetGUID().ToString(), m_caster->GetMapId(), m_caster->GetAreaId(), m_caster->GetZoneId(),
-            m_caster->IsInWater(), m_caster->IsInCombat(), m_caster->IsMounted(), m_caster->GetShapeshiftForm(), m_caster->getTransForm());
-
     if (m_CastItem)
     {
         m_castItemGUID = m_CastItem->GetGUID();
@@ -3533,10 +3527,6 @@ SpellCastResult Spell::prepare(SpellCastTargets const* targets, AuraEffect const
     // Set combo point requirement
     if (HasTriggeredCastFlag(TRIGGERED_IGNORE_COMBO_POINTS) || m_CastItem)
         m_needComboPoints = false;
-
-    // [MountDebug] probe: did a mount cast reach the server?
-    if (m_spellInfo->HasAura(SPELL_AURA_MOUNTED))
-        LOG_INFO("server.loading", "[MountDebug] CheckCast enter: spell {} map {}", m_spellInfo->Id, m_caster->GetMapId());
 
     SpellCastResult result = CheckCast(true);
     if (result != SPELL_CAST_OK && !IsAutoRepeat())          //always cast autorepeat dummy for triggering
@@ -4704,10 +4694,6 @@ void Spell::SendCastResult(Player* caster, SpellInfo const* spellInfo, uint8 cas
 
 void Spell::SendCastResult(SpellCastResult result)
 {
-    // [MountDebug] probe: server rejected a mount spell cast
-    if (result != SPELL_CAST_OK && m_spellInfo->HasAura(SPELL_AURA_MOUNTED))
-        LOG_INFO("server.loading", "[MountDebug] server rejected mount spell {} map {} result {}", m_spellInfo->Id, m_caster->GetMapId(), uint32(result));
-
     if (result == SPELL_CAST_OK)
         return;
 
@@ -5748,15 +5734,10 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* /*param1*/, uint32* /*para
 
     if (m_caster->IsPlayer() /*&& VMAP::VMapFactory::createOrGetVMapMgr()->isLineOfSightCalcEnabled()*/) // pussywizard: optimization (commented)
     {
-        // [自定义] 陆地坐骑（MOUNTED 光环且无飞行光环）豁免 ONLY_OUTDOORS：副本/建筑内可召唤
-        bool isGroundMount = m_spellInfo->HasAura(SPELL_AURA_MOUNTED) &&
-            !m_spellInfo->HasAura(SPELL_AURA_FLY) &&
-            !m_spellInfo->HasAura(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
-        if (m_spellInfo->HasAura(SPELL_AURA_MOUNTED))
-            LOG_INFO("server.loading", "[MountDebug] outdoor check: spell {} isGroundMount {} indoors {} onlyOutdoors {}",
-                m_spellInfo->Id, isGroundMount, !m_caster->IsOutdoors(), m_spellInfo->HasAttribute(SPELL_ATTR0_ONLY_OUTDOORS));
+        // [自定义] 副本/团本内陆地坐骑豁免 ONLY_OUTDOORS，室内外均可召唤（飞行坐骑仍被禁用）
+        bool const instanceGroundMount = m_caster->GetMap()->IsDungeon() && m_spellInfo->IsGroundMount();
 
-        if (m_spellInfo->HasAttribute(SPELL_ATTR0_ONLY_OUTDOORS) && !isGroundMount &&
+        if (m_spellInfo->HasAttribute(SPELL_ATTR0_ONLY_OUTDOORS) && !instanceGroundMount &&
                 !m_caster->IsOutdoors())
             return SPELL_FAILED_ONLY_OUTDOORS;
 
@@ -6049,6 +6030,15 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* /*param1*/, uint32* /*para
                                  m_caster->IsPlayer() ? m_caster->ToPlayer() : nullptr);
         if (locRes != SPELL_CAST_OK)
             return locRes;
+    }
+
+    // [自定义] 副本/团本内禁止玩家施放飞行坐骑（GM 也生效，GM 需要飞行请用 .gm fly；脚本触发的飞行机制不受影响）
+    if (!IsTriggered() && m_caster->IsPlayer() && m_spellInfo->HasAura(SPELL_AURA_MOUNTED) &&
+            m_spellInfo->IsFlyingMount())
+    {
+        if (MapEntry const* mapEntry = sMapStore.LookupEntry(m_caster->GetMapId()))
+            if (mapEntry->IsDungeon() && !mapEntry->IsBattlegroundOrArena())
+                return SPELL_FAILED_INCORRECT_AREA;
     }
 
     // not let players cast spells at mount (and let do it to creatures)
@@ -6767,11 +6757,10 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* /*param1*/, uint32* /*para
                     InstanceTemplate const* it = sObjectMgr->GetInstanceTemplate(m_caster->GetMapId());
                     if (it)
                         allowMount = it->AllowMount;
-                    // [MountDebug] print what the mount cast check actually sees
-                    LOG_INFO("server.loading", "[MountDebug] mount cast: spell {} map {} dungeon {} bg {} instanceTemplate {} allowMount {} AreaGroupId {}",
-                        m_spellInfo->Id, m_caster->GetMapId(), m_caster->GetMap()->IsDungeon(),
-                        m_caster->GetMap()->IsBattlegroundOrArena(), it != nullptr, allowMount, m_spellInfo->AreaGroupId);
-                    if (m_caster->IsPlayer() && !allowMount && !m_spellInfo->AreaGroupId)
+
+                    // [自定义] 副本/团本内陆地坐骑始终可用，飞行坐骑由区域检查单独禁用
+                    if (m_caster->IsPlayer() && !allowMount && !m_spellInfo->AreaGroupId &&
+                            !(m_caster->GetMap()->IsDungeon() && m_spellInfo->IsGroundMount()))
                         return SPELL_FAILED_NO_MOUNTS_ALLOWED;
 
                     if (m_caster->IsInDisallowedMountForm())
@@ -6800,17 +6789,9 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* /*param1*/, uint32* /*para
             case SPELL_AURA_FLY:
             case SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED:
                 {
-                    // [MountDebug] probe: flying spell reached fly check
-                    LOG_INFO("server.loading", "[MountDebug] fly check enter: spell {} map {} area {} water {} alive {}",
-                        m_spellInfo->Id, m_caster->GetMapId(), m_caster->GetAreaId(), m_caster->IsInWater(),
-                        m_originalCaster ? m_originalCaster->IsAlive() : false);
-
                     // Xinef: added water check
                     if (m_caster->IsInWater())
-                    {
-                        LOG_INFO("server.loading", "[MountDebug] fly check reject: spell {} map {} reason ONLY_ABOVEWATER", m_spellInfo->Id, m_caster->GetMapId());
                         return SPELL_FAILED_ONLY_ABOVEWATER;
-                    }
 
                     // not allow cast fly spells if not have req. skills  (all spells is self target)
                     // allow always ghost flight spells
@@ -6819,13 +6800,8 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* /*param1*/, uint32* /*para
                         Battlefield* Bf = sBattlefieldMgr->GetBattlefieldToZoneId(m_originalCaster->GetZoneId());
                         if (AreaTableEntry const* pArea = sAreaTableStore.LookupEntry(m_originalCaster->GetAreaId()))
                         {
-                            LOG_INFO("server.loading", "[MountDebug] fly check zone: spell {} map {} area {} flags {} battlefieldCanFly {}",
-                                m_spellInfo->Id, m_caster->GetMapId(), pArea->ID, pArea->flags, Bf ? Bf->CanFlyIn() : true);
                             if ((pArea->flags & AREA_FLAG_NO_FLY_ZONE) || (Bf && !Bf->CanFlyIn()))
-                            {
-                                LOG_INFO("server.loading", "[MountDebug] fly check reject: spell {} map {} area {} reason NOT_HERE", m_spellInfo->Id, m_caster->GetMapId(), pArea->ID);
                                 return SPELL_FAILED_NOT_HERE;
-                            }
                         }
                     }
                     break;

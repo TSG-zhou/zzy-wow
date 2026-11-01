@@ -32,6 +32,7 @@
 #include "Pet.h"
 #include "Player.h"
 #include "ScriptMgr.h"
+#include "SpellAuraEffects.h"
 #include "SpellAuras.h"
 #include "Transport.h"
 #include "UpdateData.h"
@@ -39,6 +40,8 @@
 #include "WaypointMovementGenerator.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include <algorithm>
+#include <vector>
 
 #define MOVEMENT_PACKET_TIME_DELAY 0
 
@@ -251,7 +254,7 @@ void WorldSession::HandleMoveWorldportAck()
         }
     }
 
-    bool allowMount = !mEntry->IsDungeon() || mEntry->IsBattlegroundOrArena();
+    bool const isDungeon = mEntry->IsDungeon() && !mEntry->IsBattlegroundOrArena();
     if (mInstance)
     {
         Difficulty diff = GetPlayer()->GetDifficulty(mEntry->IsRaid());
@@ -262,15 +265,33 @@ void WorldSession::HandleMoveWorldportAck()
                     uint32 timeleft = uint32(timeReset - GameTime::GetGameTime().count());
                     GetPlayer()->SendInstanceResetWarning(mEntry->MapID, diff, timeleft, true);
                 }
-        allowMount = mInstance->AllowMount;
     }
 
-    // [MountDebug] print the enter-map mount decision
-    LOG_INFO("server.loading", "[MountDebug] enter map {} allowMount {}", mEntry->MapID, allowMount);
+    // mount allow check: [自定义] 副本/团本内只移除飞行光环，陆地坐骑始终保留
+    if (isDungeon)
+    {
+        std::vector<uint32> flyingAuraSpells;
+        auto collectFlyingAuras = [&](AuraType type)
+        {
+            for (AuraEffect const* aurEff : _player->GetAuraEffectsByType(type))
+            {
+                SpellInfo const* auraInfo = aurEff->GetSpellInfo();
+                if (!auraInfo->IsFlyingMount())
+                    continue;
 
-    // mount allow check
-    if (!allowMount)
-        _player->RemoveAurasByType(SPELL_AURA_MOUNTED);
+                if (std::find(flyingAuraSpells.begin(), flyingAuraSpells.end(), auraInfo->Id) ==
+                        flyingAuraSpells.end())
+                    flyingAuraSpells.push_back(auraInfo->Id);
+            }
+        };
+
+        collectFlyingAuras(SPELL_AURA_MOUNTED);
+        collectFlyingAuras(SPELL_AURA_FLY);
+        collectFlyingAuras(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
+
+        for (uint32 spellId : flyingAuraSpells)
+            _player->RemoveAurasDueToSpell(spellId);
+    }
 
     // update zone immediately, otherwise leave channel will cause crash in mtmap
     uint32 newzone, newarea;
@@ -856,7 +877,24 @@ void WorldSession::HandleMoveKnockBackAck(WorldPacket& recvData)
     }
 
     if (mover->IsPlayer() && static_cast<Player*>(mover)->IsFreeFlying())
-        mover->SetCanFly(true);
+    {
+        Player* player = static_cast<Player*>(mover);
+
+        // [自定义] 副本/团本内飞行坐骑不恢复 CAN_FLY（脚本飞行机制不受影响）
+        Map* map = player->GetMap();
+        bool blockFlyingMount = false;
+
+        if (map->IsDungeon() && !map->IsBattlegroundOrArena())
+            for (AuraEffect const* aurEff : player->GetAuraEffectsByType(SPELL_AURA_MOUNTED))
+                if (aurEff->GetSpellInfo()->IsFlyingMount())
+                {
+                    blockFlyingMount = true;
+                    break;
+                }
+
+        if (!blockFlyingMount)
+            mover->SetCanFly(true);
+    }
 
     WorldPacket data(MSG_MOVE_KNOCK_BACK, 66);
     WriteMovementInfo(&data, &movementInfo);

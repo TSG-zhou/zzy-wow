@@ -5891,12 +5891,19 @@ void Player::CheckAreaExploreAndOutdoor()
 
         SpellAttr0 attrToRemove = isOutdoor ? SPELL_ATTR0_ONLY_INDOORS : SPELL_ATTR0_ONLY_OUTDOORS;
         SpellAttr0 attrToRecalculate = isOutdoor ? SPELL_ATTR0_ONLY_OUTDOORS : SPELL_ATTR0_ONLY_INDOORS;
+        bool const isDungeon = GetMap()->IsDungeon();
         for (AuraApplicationMap::iterator iter = m_appliedAuras.begin(); iter != m_appliedAuras.end();)
         {
             Aura* aura = iter->second->GetBase();
             SpellInfo const* spell = aura->GetSpellInfo();
             if (spell->Attributes & attrToRemove)
             {
+                // [自定义] 副本/团本内陆地坐骑不受室内外限制，进入室内时保留
+                if (isDungeon && spell->IsGroundMount())
+                {
+                    ++iter;
+                    continue;
+                }
                 // if passive - do not remove and just turn off all effects
                 if (aura->IsPassive())
                 {

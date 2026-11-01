@@ -434,6 +434,8 @@ public:
     bool HasEffect(SpellEffects effect) const;
     bool HasEffectMechanic(Mechanics mechanic) const;
     bool HasAura(AuraType aura) const;
+    bool IsGroundMount() const;
+    bool IsFlyingMount() const;
     bool HasAnyAura() const;
     bool HasAreaAuraEffect() const;
     bool HasOnlyDamageEffects() const;

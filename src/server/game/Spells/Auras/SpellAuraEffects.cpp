@@ -3432,6 +3432,22 @@ void AuraEffect::HandleAuraMounted(AuraApplication const* aurApp, uint8 mode, bo
     }
 }
 
+namespace
+{
+    bool CanPlayerEnableFlightInMap(Unit const* target, SpellInfo const* spellInfo)
+    {
+        if (!target->IsPlayer())
+            return true;
+
+        // 只拦截飞行坐骑法术，副本脚本自己的飞行机制（如凯尔萨斯的重力失效）不受影响
+        if (!spellInfo->HasAura(SPELL_AURA_MOUNTED) || !spellInfo->IsFlyingMount())
+            return true;
+
+        Map const* map = target->GetMap();
+        return !map->IsDungeon() || map->IsBattlegroundOrArena();
+    }
+}
+
 void AuraEffect::HandleAuraAllowFlight(AuraApplication const* aurApp, uint8 mode, bool apply) const
 {
     if (!(mode & AURA_EFFECT_HANDLE_SEND_FOR_CLIENT_MASK))
@@ -3446,7 +3462,8 @@ void AuraEffect::HandleAuraAllowFlight(AuraApplication const* aurApp, uint8 mode
             return;
     }
 
-    target->SetCanFly(apply);
+    // [自定义] 副本/团本内飞行坐骑不授予 CAN_FLY（脚本飞行机制不受影响）
+    target->SetCanFly(apply && CanPlayerEnableFlightInMap(target, GetSpellInfo()));
 
     if (!apply && target->IsCreature() && !target->IsLevitating())
         target->GetMotionMaster()->MoveFall();
@@ -3852,7 +3869,8 @@ void AuraEffect::HandleAuraModIncreaseFlightSpeed(AuraApplication const* aurApp,
         // do not remove unit flag if there are more than this auraEffect of that kind on unit on unit
         if (mode & AURA_EFFECT_HANDLE_SEND_FOR_CLIENT_MASK && (apply || (!target->HasIncreaseMountedFlightSpeedAura() && !target->HasFlyAura())))
         {
-            target->SetCanFly(apply);
+            // [自定义] 副本/团本内飞行坐骑不授予 CAN_FLY（脚本飞行机制不受影响）
+            target->SetCanFly(apply && CanPlayerEnableFlightInMap(target, GetSpellInfo()));
 
             if (!apply && target->IsCreature() && !target->IsLevitating())
                 target->GetMotionMaster()->MoveFall();
