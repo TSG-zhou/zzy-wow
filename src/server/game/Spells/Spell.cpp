@@ -637,6 +637,7 @@ Spell::Spell(Unit* caster, SpellInfo const* info, TriggerCastFlags triggerFlags,
         _triggeredCastFlags = TriggerCastFlags(uint32(_triggeredCastFlags) | TRIGGERED_IGNORE_CAST_IN_PROGRESS | TRIGGERED_CAST_DIRECTLY);
 
     m_CastItem = nullptr;
+    m_isPotionCast = false;
 
     unitTarget = nullptr;
     itemTarget = nullptr;
@@ -4380,8 +4381,20 @@ void Spell::SendSpellCooldown()
 
     Player* _player = m_caster->ToPlayer();
 
-    // mana/health/etc potions, disabled by client (until combat out as declarate)
-    if (m_CastItem && (m_CastItem->IsPotion() || m_spellInfo->IsCooldownStartedOnEvent()))
+    // potions start their cooldown once the cast has been sent to the client, even in combat
+    if (m_CastItem && m_CastItem->IsPotion())
+    {
+        if (!IsIgnoringCooldowns())
+        {
+            m_isPotionCast = true;
+            // need in some way provided data for Spell::finish SendCooldownEvent
+            _player->SetLastPotionId(m_CastItem->GetEntry());
+        }
+        return;
+    }
+
+    // other item spells whose cooldown starts on event keep the deferred cooldown
+    if (m_CastItem && m_spellInfo->IsCooldownStartedOnEvent())
     {
         // need in some way provided data for Spell::finish SendCooldownEvent
         _player->SetLastPotionId(m_CastItem->GetEntry());
@@ -5708,8 +5721,9 @@ SpellCastResult Spell::CheckCast(bool strict, uint32* /*param1*/, uint32* /*para
                     return SPELL_FAILED_NOT_READY;
             }
 
-            // check if we are using a potion in combat for the 2nd+ time. Cooldown is added only after caster gets out of combat
-            if (m_caster->ToPlayer()->GetLastPotionId() && m_CastItem && (m_CastItem->IsPotion() || m_spellInfo->IsCooldownStartedOnEvent()))
+            // potions are excluded: they start their cooldown immediately on use
+            if (m_caster->ToPlayer()->GetLastPotionId() && m_CastItem && !m_CastItem->IsPotion()
+                && m_spellInfo->IsCooldownStartedOnEvent())
                 return SPELL_FAILED_NOT_READY;
         }
         else if (!IsTriggered() && m_caster->IsCreature() && m_caster->ToCreature()->IsSpellProhibited(m_spellInfo->GetSchoolMask()))
