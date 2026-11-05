@@ -88,7 +88,6 @@ public:
             LoadBossBoundaries(boundaries);
             LoadSummonData(summonData);
 
-            _aliveKeepersCount = 0;
             _frenzyCount = 0;
         }
 
@@ -146,6 +145,10 @@ public:
                 default:
                     break;
             }
+
+            if (IsPlatformKeeper(creature))
+                _keeperGUIDs.insert(creature->GetGUID());
+
             InstanceScript::OnCreatureCreate(creature);
         }
 
@@ -155,6 +158,9 @@ public:
                 if (_frenzyCount > 0)
                     --_frenzyCount;
 
+            if (IsPlatformKeeper(creature))
+                _keeperGUIDs.erase(creature->GetGUID());
+
             InstanceScript::OnCreatureRemove(creature);
         }
 
@@ -162,14 +168,6 @@ public:
         {
             switch (type)
             {
-                case DATA_PLATFORM_KEEPER_RESPAWNED:
-                    if (_aliveKeepersCount < MAX_KEEPER_COUNT)
-                        ++_aliveKeepersCount;
-                    break;
-                case DATA_PLATFORM_KEEPER_DIED:
-                    if (_aliveKeepersCount > MIN_KEEPER_COUNT)
-                        --_aliveKeepersCount;
-                    break;
                 case DATA_ACTIVATE_SHIELD:
                     if (Creature* vashj = GetCreature(DATA_LADY_VASHJ))
                     {
@@ -189,14 +187,28 @@ public:
         uint32 GetData(uint32 type) const override
         {
             if (type == DATA_ALIVE_KEEPERS)
-                return _aliveKeepersCount;
+            {
+                uint32 alive = 0;
+                for (ObjectGuid const& guid : _keeperGUIDs)
+                    if (Creature* keeper = instance->GetCreature(guid))
+                        if (keeper->IsAlive())
+                            ++alive;
+
+                return alive;
+            }
 
             return 0;
         }
 
     private:
+        static bool IsPlatformKeeper(Creature const* creature)
+        {
+            ObjectGuid::LowType const spawnId = creature->GetSpawnId();
+            return spawnId >= KEEPER_SPAWN_ID_FIRST && spawnId <= KEEPER_SPAWN_ID_LAST;
+        }
+
         ObjectGuid _shieldGeneratorGUID[4];
-        uint32 _aliveKeepersCount;
+        GuidSet _keeperGUIDs;
         uint32 _frenzyCount;
     };
 

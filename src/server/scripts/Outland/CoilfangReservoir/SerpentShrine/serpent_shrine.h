@@ -34,8 +34,6 @@ enum DataTypes
     DATA_LADY_VASHJ                         = 5,
     MAX_ENCOUNTERS                          = 6,
 
-    DATA_PLATFORM_KEEPER_RESPAWNED          = 20,
-    DATA_PLATFORM_KEEPER_DIED               = 21,
     DATA_ALIVE_KEEPERS                      = 22,
     DATA_ACTIVATE_SHIELD                    = 23,
     DATA_STRANGE_POOL                       = 24,
@@ -97,10 +95,14 @@ enum SSSpells
 
 enum SSNPCCount
 {
-    MIN_KEEPER_COUNT = 0,
-    MAX_KEEPER_COUNT = 54,
-
     MAX_FRENZY_COUNT = 50
+};
+
+// Spawn ids of the trash on the six platforms around the Lurker pool
+enum SSKeeperSpawns : uint32
+{
+    KEEPER_SPAWN_ID_FIRST = 153022,
+    KEEPER_SPAWN_ID_LAST  = 153075
 };
 
 template <class AI, class T>
